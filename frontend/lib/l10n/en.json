@@ -1,0 +1,1003 @@
+{
+  "register": "Register",
+  "create_account": "Create an Account",
+  "name": "Name",
+  "enter_name": "Enter your name",
+  "mobile": "Mobile",
+  "enter_mobile": "Enter mobile number",
+  "invalid_mobile": "Enter a valid mobile number",
+  "email": "Email",
+  "password": "Password",
+  "enter_password": "Enter your password",
+  "business_name": "Business Name",
+  "enter_business": "Enter business name",
+  "already_registered": "Already registered? Login",
+  "login_success": "Login successful",
+  "invalid_credentials": "Invalid credentials",
+  "server_error": "Server error. Please try again later",
+  "registration_success": "Registration successful",
+  "registration_failed": "Registration failed",
+  "login": "Login",
+  "welcome_back": "Welcome Back",
+  "email_or_mobile": "Email or Mobile",
+  "enter_email_or_mobile": "Enter email or mobile",
+  "new_user_register": "New user? Register",
+  "select_business": "Select Business",
+  "business": "Business",
+
+  "about": {
+    "page_title": "About Udyamix",
+
+    "sections": {
+      "executive_perspective": {
+        "title": "Executive Perspective",
+        "subtitle": "Why Udyamix?",
+        "content": "In the modern market, \"data\" is often treated as a burden rather than an asset. Small to mid-sized business (SMB) owners are frequently overwhelmed by numbers that tell them what happened but never why it happened or how to fix it. Udyamix was founded on a singular perspective: Every business owner deserves the clarity of a corporate CFO. We believe that by removing the friction of manual data entry and replacing it with AI-driven \"Prescriptive Analytics,\" we can help businesses transition from surviving to thriving. Udyamix doesn't just record your journey; it maps the fastest route to your goals.",
+        "points": [
+          "Transforms data into actionable intelligence",
+          "Eliminates manual effort using AI",
+          "Provides CFO-level clarity",
+          "Guides businesses toward growth"
+        ]
+      },
+
+      "vision_mission": {
+        "title": "Core Strategic Pillars",
+        "subtitle": "Vision & Mission",
+        "content": "Vision: \"To be the world’s most intuitive intelligence platform, where every entrepreneur can master their financial future through AI.\" Mission: \"To simplify, automate, and optimize business operations by providing real-time insights that turn complex data into simple, profitable actions.\"",
+        "points": [
+          "Simplification of complex systems",
+          "Automation using AI",
+          "Optimization through real-time insights",
+          "Accessible intelligence for all"
+        ]
+      },
+
+      "revenue_engine": {
+        "title": "Udyam-Revenue",
+        "subtitle": "Sales & Growth Engine",
+        "content": "Udyamix predicts, analyzes, and optimizes revenue using advanced AI models. It helps businesses forecast growth and improve customer engagement strategies.",
+        "points": [
+          "Predictive sales modeling (30/60/90 days)",
+          "Customer sentiment mapping",
+          "Dynamic pricing engine",
+          "AI-driven re-engagement campaigns"
+        ]
+      },
+
+      "finance_management": {
+        "title": "Udyam-Flow",
+        "subtitle": "AI-Powered Finance",
+        "content": "Udyamix automates expense tracking and financial analysis using intelligent systems. It ensures accurate reporting and proactive cost management.",
+        "points": [
+          "OCR-based bill processing",
+          "Automatic tax categorization",
+          "Leakage detection alerts",
+          "Cash flow forecasting"
+        ]
+      },
+
+      "inventory_intelligence": {
+        "title": "Udyam-Stock",
+        "subtitle": "Inventory Intelligence",
+        "content": "Inventory is managed using AI-driven insights that eliminate guesswork and improve efficiency. Udyamix ensures optimal stock levels and reduces waste.",
+        "points": [
+          "Smart demand-based ordering",
+          "Deadstock detection",
+          "Real-time stock tracking",
+          "Automated valuation (FIFO/LIFO)"
+        ]
+      },
+
+      "market_intelligence": {
+        "title": "Advanced AI Analysis",
+        "subtitle": "Market & Stock Intelligence",
+        "content": "Udyamix analyzes global market trends and external factors that impact your business, enabling proactive decision-making.",
+        "points": [
+          "Market sentiment tracking",
+          "Correlation engine for cost prediction",
+          "Supply chain insights",
+          "Predictive alerts for price changes"
+        ]
+      },
+
+      "growth_system": {
+        "title": "Virtual Consultant",
+        "subtitle": "AI Feedback System",
+        "content": "Udyamix continuously evaluates your business and provides weekly insights and growth strategies through its AI feedback loop.",
+        "points": [
+          "Efficiency scoring",
+          "Profit improvement actions",
+          "Risk analysis and stress testing",
+          "Weekly growth blueprint"
+        ]
+      },
+
+      "values": {
+        "title": "The Udyamix Code",
+        "subtitle": "Core Values",
+        "content": "Udyamix is built on principles of simplicity, security, and empowerment. Every feature is designed to deliver clarity and trust.",
+        "points": [
+          "Radical simplicity in design",
+          "AES-256 data security",
+          "Human-first AI approach",
+          "Inclusive innovation"
+        ]
+      },
+
+      "roadmap": {
+        "title": "The Road Ahead",
+        "subtitle": "Future of Udyamix",
+        "content": "Udyamix is evolving toward autonomous business management with advanced integrations and intelligent automation.",
+        "points": [
+          "B2B marketplace integration",
+          "Automated tax filing",
+          "Voice-first interface",
+          "Autonomous business systems"
+        ]
+      }
+    }
+  },
+  "expenses": {
+    "add_expense": "Add Expense",
+    "amount": "Amount",
+    "amount_required": "Amount required",
+    "vendor_name_optional": "Vendor Name (optional)",
+    "category": "Category",
+    "rent": "Rent",
+    "utilities": "Utilities",
+    "transport": "Transport",
+    "food": "Food",
+    "supplies": "Supplies",
+    "salary": "Salary",
+    "other": "Other",
+    "description_optional": "Description (optional)",
+    "payment_completed": "Payment Completed",
+    "save_expense": "Save Expense",
+    "business_not_selected": "Business not selected",
+    "expense_added_success": "Expense added successfully"
+  },
+
+  "sales": {
+    "add_sale": "Add Sale",
+    "amount": "Amount",
+    "amount_required": "Amount is required",
+    "customer_name_optional": "Customer Name (optional)",
+    "category_name": "Category Name",
+    "description_optional": "Description (optional)",
+    "payment_received": "Payment Received",
+    "save_sale": "Save Sale",
+    "sale_added_success": "Sale added successfully",
+    "business_not_selected": "Business not selected"
+  },
+  "ai_insights": {
+    "title": "AI Insights",
+    "7_days": "7 Days",
+    "30_days": "30 Days",
+    "score": "Score",
+    "urgency": "Urgency",
+    "root_cause": "Root Cause",
+    "impact_value": "Impact Value",
+    "formula": "Formula",
+    "action_plan": "Action Plan:",
+    "read_detailed_analysis": "Read Detailed Analysis",
+    "show_less": "Show Less",
+    "no_insights": "No insights available.",
+    "error_fetching": "Error loading insights."
+  },
+
+  "dashboard": {
+    "business": "Business",
+    "quick_actions": "Quick Actions",
+    "home": "Home",
+    "ai_insights": "AI Insights",
+    "profile": "Profile",
+    "calendar_title": "Your Calendar",
+    "calendar_subtitle": "Track your business activity",
+    "no_data_title": "No data yet",
+    "no_data_subtitle": "Add sales or expenses to see insights",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "total": "Total",
+    "see_sales": "See Sales",
+    "see_expenses": "See Expenses",
+    "see_inventory": "See Inventory",
+    "see_stock": "See Stock",
+    "add_inventory": "Add Inventory"
+  },
+
+  "expense": {
+    "title": "Expenses",
+    "all": "All Expenses",
+    "paid": "Paid Expenses",
+    "unpaid": "Unpaid Expenses",
+    "empty": "No expenses found",
+    "vendor_name": "Vendor Name",
+    "amount": "Amount",
+    "category": "Category",
+    "date": "Date",
+    "status": "Status",
+    "fetch_failed": "Failed to fetch expenses"
+  },
+
+  "features": {
+    "title": "Features",
+    "sales": "Sales",
+    "expenses": "Expenses",
+    "inventory": "Inventory",
+    "ai": "AI",
+    "comparison": "Comparison",
+
+    "sales_title": "Sales & Revenue Tools",
+    "sales_subtitle": "Maximize every transaction and build customer loyalty",
+    "sales_content": "The Udyamix Sales Engine is designed to help you track, analyze, and optimize every rupee flowing into your business. It eliminates manual errors and ensures that every sale contributes to accurate financial insights.",
+    "sales_points": [
+      "Universal Payment Logging – Record Cash, UPI, Card, and Credit (Udhaar) from one dashboard",
+      "Instant Digital Receipts – Send GST-compliant invoices directly via WhatsApp or SMS",
+      "Smart Khata (Credit Ledger) – Automatically track pending payments with reminders",
+      "Live Profit Visibility – See gross revenue vs net profit in real-time after every sale",
+      "Customer Management – Maintain history and build long-term customer relationships"
+    ],
+
+    "expenses_title": "Expense Management",
+    "expenses_subtitle": "Plug financial leaks and protect your margins",
+    "expenses_content": "Most businesses lose 10–15% of profits due to untracked expenses. Udyamix ensures every rupee leaving your business is recorded, categorized, and analyzed.",
+    "expenses_points": [
+      "AI Smart-Scan (OCR) – Snap a photo and auto-extract bill details like vendor, amount, and date",
+      "Automated Recurring Bills – Auto-log rent, electricity, subscriptions without manual entry",
+      "Categorized Spending Analytics – Break down expenses into inventory, staff wages, and operations",
+      "Vendor Price Tracking – Detect price increases from suppliers and negotiate better deals",
+      "Expense Reports – Generate monthly summaries for better financial planning"
+    ],
+
+    "inventory_title": "Inventory Solutions",
+    "inventory_subtitle": "Turn stock into a profit engine",
+    "inventory_content": "Inventory is your biggest investment. Udyamix ensures your capital is always in motion and never locked in slow-moving or dead stock.",
+    "inventory_points": [
+      "Predictive Stock Alerts – AI predicts stock depletion and notifies you in advance",
+      "Expiry & Batch Management – Track expiry dates and reduce losses in perishable goods",
+      "Deadstock Detector – Identify products not sold in 30 days and optimize clearance",
+      "Barcode Integration – Use your phone camera as a high-speed scanner",
+      "Multi-Variant Support – Manage sizes, weights, and product variations easily"
+    ],
+
+    "ai_title": "AI Business Coaching",
+    "ai_subtitle": "Your personal CFO and strategist",
+    "ai_content": "Udyamix AI acts as your business advisor, analyzing your data and guiding you toward smarter decisions. It helps you grow profitably with data-backed strategies instead of guesswork.",
+    "ai_points": [
+      "Dynamic Margin Optimizer – Suggests ideal pricing when costs change",
+      "Peak-Hour Analysis – Predicts busy hours to optimize staffing and inventory",
+      "What-If Growth Simulator – Test scenarios like price changes or cost reduction",
+      "Weekly Strategy Pulse – AI-generated weekly business summary and action plan",
+      "Risk Alerts – Detect unusual patterns like sudden expense spikes"
+    ],
+
+    "comparison_title": "Udyamix vs Traditional Method",
+    "comparison_subtitle": "From manual chaos to intelligent automation",
+    "comparison_content": "Traditional business management relies on manual effort, guesswork, and delayed reporting. Udyamix transforms this into a real-time, intelligent system.",
+    "comparison_points": [
+      "Bill Entry: Manual typing (5 mins) → AI Photo Scan (5 seconds)",
+      "Profit Tracking: Monthly calculation → Real-time dashboard",
+      "Stock Management: Guessing → Predictive alerts",
+      "Growth Decisions: Gut feeling → AI-driven insights",
+      "Expense Tracking: Unorganized → Auto-categorized system"
+    ]
+  },
+  "app": {
+    "title": "Udyamix"
+  },
+  "menu": {
+    "title": "Menu",
+    "about": "About",
+    "privacy": "Privacy",
+    "security": "Security",
+    "terms": "Terms",
+    "help_center": "Help Center"
+  },
+  "help": {
+    "title": "Help Center",
+    "quick_start": "Quick Start",
+    "sales_expenses": "Sales & Expenses",
+    "inventory": "Inventory",
+    "ai_analyst": "AI Analyst",
+
+    "quick_start_title": "Quick Start: Setting Up for Success",
+    "quick_start_subtitle": "Build a strong foundation",
+    "quick_start_content": "The first 5 minutes in Udyamix determine the accuracy of your future reports.",
+    "quick_start_points": [
+      "Go to Profile > Business Settings",
+      "Enter Business Name & Category",
+      "Enable GST for automatic tax calculation",
+      "Choose FIFO or Average Cost for profit rules"
+    ],
+
+    "step1_title": "Step 1: Business Identity & Localization",
+    "step1_subtitle": "Make AI understand your business",
+    "step1_content": "Selecting the right category allows AI to compare your margins with similar businesses.",
+    "step1_points": [
+      "Enter Business Name",
+      "Select Business Category",
+      "Enable GST if applicable"
+    ],
+
+    "sales_expenses_title": "Sales & Expenses",
+    "sales_expenses_subtitle": "Cash flow made easy",
+    "sales_expenses_content": "Track all money in and out with zero friction.",
+    "sales_expenses_points": [
+      "Tap (+) to add sales",
+      "Select payment mode",
+      "Attach customer",
+      "Send WhatsApp receipt"
+    ],
+
+    "inventory_title": "Inventory Intelligence",
+    "inventory_subtitle": "Smart stock management",
+    "inventory_content": "Manage inventory with intelligence.",
+    "inventory_points": [
+      "Add products",
+      "Scan barcode",
+      "Create variants"
+    ],
+
+    "ai_analyst_title": "AI Analyst",
+    "ai_analyst_subtitle": "Your virtual CFO",
+    "ai_analyst_content": "AI turns data into insights.",
+    "ai_analyst_points": [
+      "Detect leakage",
+      "Analyze trends",
+      "Smart recommendations"
+    ]
+
+  },
+  "inventory": {
+    "title": "Inventory",
+    "search_hint": "Search product or brand...",
+    "empty_text": "No inventory found",
+    "add_fail": "Failed to add inventory",
+    "update_fail": "Failed to update inventory",
+    "delete_fail": "Failed to delete inventory"
+  },
+
+  "privacy": {
+    "title": "Privacy",
+    "philosophy": "Philosophy",
+    "data_collection": "Data Collection",
+    "ai_protocol": "AI Protocol",
+    "integrations": "Integrations",
+    "data_rights": "Data Rights",
+
+    "philosophy_title": "Philosophy of Data Sovereignty",
+    "philosophy_subtitle": "Ownership & Control",
+    "philosophy_content": "At Udyamix, we operate under the \"Sovereign Data Model.\" While our infrastructure hosts your business information, you remain the sole legal owner. Udyamix acts strictly as a Data Processor, not a Data Controller.\n\nWe do not monetize your business patterns, customer identities, or financial performance without explicit user consent.",
+    "philosophy_points": [
+      "You retain 100% ownership of your data",
+      "Udyamix acts only as a processor",
+      "No unauthorized monetization of user data",
+      "Full transparency and control"
+    ],
+
+    "data_collection_title": "Categories of Data Collection",
+    "data_collection_subtitle": "Three Vault Model",
+    "data_collection_content": "We structure all collected data into three secure vaults designed for clarity and security.",
+    "data_collection_points": [
+      "Identity Vault: Personal & business identification details",
+      "Operational Vault: Sales, expenses, inventory data",
+      "Behavioral Vault: App usage patterns for UX improvement",
+      "Strict usage boundaries for each category"
+    ],
+
+    "ai_protocol_title": "AI Anonymization Protocol",
+    "ai_protocol_subtitle": "Privacy-Preserving Machine Learning",
+    "ai_protocol_content": "Udyamix uses anonymized data for AI insights. Your identity is never exposed in any shared intelligence.",
+    "ai_protocol_points": [
+      "Data is anonymized before AI processing",
+      "Business identity is hashed into secure codes",
+      "Insights are based on aggregated data",
+      "No competitive data leakage"
+    ],
+
+    "integrations_title": "Third-Party Integrations",
+    "integrations_subtitle": "Secure API Access",
+    "integrations_content": "Udyamix integrates securely with banks, WhatsApp, and e-commerce platforms using OAuth 2.0 protocols.",
+    "integrations_points": [
+      "No storage of sensitive passwords",
+      "Token-based secure access",
+      "User-controlled permissions",
+      "Safe integration with external platforms"
+    ],
+
+    "data_rights_title": "Data Retention & User Rights",
+    "data_rights_subtitle": "Right to be Forgotten",
+    "data_rights_content": "User data is retained only as long as necessary and is fully deletable upon request.",
+    "data_rights_points": [
+      "Active data retained during subscription",
+      "30-day backup after cancellation",
+      "Permanent deletion after 30 days",
+      "DoD-level secure wiping algorithms"
+    ]
+  },
+  "profile": {
+    "no_user": "No user data found",
+    "settings": "Settings",
+    "app_settings": "App Settings",
+    "privacy_security": "Privacy & Security",
+    "language": "Language",
+    "logout": "Logout",
+    "close": "Close"
+  },
+
+  "sale": {
+    "title": "Sales",
+    "all_sales": "All Sales",
+    "paid_sales": "Paid Sales",
+    "unpaid_sales": "Unpaid Sales",
+    "no_sales": "No sales found",
+    "unknown_customer": "Unknown Customer",
+    "amount": "Amount",
+    "category": "Category",
+    "date": "Date",
+    "status": "Status",
+    "paid": "Paid",
+    "unpaid": "Unpaid"
+  },
+
+  "security": {
+    "title": "Security",
+    "encryption": "Encryption",
+    "access_control": "Access Control",
+    "ocr_privacy": "OCR Privacy",
+    "infrastructure": "Infrastructure",
+
+    "encryptions": {
+      "title": "Encryption at Every Layer",
+      "subtitle": "Defense-in-Depth",
+      "content": "Security is foundational at Udyamix. All data is encrypted both at rest and in transit.",
+      "points": [
+        "AES-256 encryption for stored data",
+        "TLS 1.3 for data transmission",
+        "Protection against network attacks",
+        "End-to-end secure communication"
+      ]
+    },
+
+    "access": {
+      "title": "Identity & Access Management",
+      "subtitle": "Secure Authentication",
+      "content": "We implement strict identity verification and session management systems.",
+      "points": [
+        "Biometric authentication support",
+        "Session monitoring for suspicious activity",
+        "Automatic session freezing on anomalies",
+        "2FA verification for login security"
+      ]
+    },
+
+    "ocr": {
+      "title": "Smart-Scan OCR Privacy",
+      "subtitle": "Secure Document Processing",
+      "content": "All scanned documents are processed securely without human access.",
+      "points": [
+        "Processing in volatile memory sandbox",
+        "Only structured data is extracted",
+        "Raw images deleted or encrypted",
+        "No human interaction with receipts"
+      ]
+    },
+
+    "infrastructures": {
+      "title": "Infrastructure & Resilience",
+      "subtitle": "High Availability Systems",
+      "content": "Udyamix infrastructure is built for resilience and continuous availability.",
+      "points": [
+        "SOC 2 compliance standards",
+        "Real-time redundancy across zones",
+        "Instant failover between data centers",
+        "High availability architecture"
+      ]
+    }
+  },
+
+  "settings": {
+    "title": "Settings",
+    "buttons": {
+      "update_profile": "Update Profile",
+      "update_business": "Update Business",
+      "change_password": "Change Password",
+      "delete_business": "Delete Business",
+      "submit": "Submit"
+    },
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "mobile": "Mobile",
+      "business_name": "Business Name",
+      "old_password": "Old Password",
+      "new_password": "New Password"
+    },
+    "messages": {
+      "user_updated": "User updated successfully",
+      "business_updated": "Business updated successfully",
+      "password_changed": "Password updated",
+      "business_deleted": "Business deleted",
+      "error": "Something went wrong"
+    },
+    "dialogs": {
+      "profile_title": "Update Profile",
+      "business_title": "Update Business",
+      "password_title": "Change Password"
+    }
+  },
+
+  "terms": {
+    "title": "Terms & Conditions",
+    "sections": {
+      "eligibility": {
+        "title": "Eligibility",
+        "subtitle": "User Responsibility",
+        "content": "Users must be legally registered businesses or sole proprietors and must provide accurate data.",
+        "points": [
+          "Valid business registration required",
+          "Accurate data input expected",
+          "System effectiveness depends on data quality"
+        ]
+      },
+      "ai_disclaimer": {
+        "title": "AI Disclaimer",
+        "subtitle": "Augmented Intelligence",
+        "content": "Udyamix provides insights based on data models, not professional advice.",
+        "points": [
+          "Not a substitute for legal or financial advice",
+          "AI suggestions are predictive, not guaranteed",
+          "User retains decision responsibility",
+          "No liability for financial outcomes"
+        ]
+      },
+      "subscription": {
+        "title": "Subscription",
+        "subtitle": "Service Tiers",
+        "content": "Udyamix offers multiple subscription tiers with feature-based access.",
+        "points": [
+          "Growth, Pro, and Enterprise plans",
+          "Feature-based access control",
+          "API usage limits per plan",
+          "Fair usage policies enforced"
+        ]
+      },
+      "ip_rights": {
+        "title": "Intellectual Property",
+        "subtitle": "Ownership Rights",
+        "content": "Udyamix retains ownership of its platform, while users retain ownership of their data.",
+        "points": [
+          "Udyamix owns platform & AI models",
+          "Users own business data & strategies",
+          "No unauthorized use of user IP"
+        ]
+      },
+      "termination": {
+        "title": "Termination",
+        "subtitle": "Policy Enforcement",
+        "content": "Accounts may be suspended for misuse or illegal activities.",
+        "points": [
+          "No illegal activity usage allowed",
+          "No reverse engineering of AI",
+          "No manipulation of system data",
+          "Strict enforcement policies"
+        ]
+      }
+    }
+  },
+
+  "analyze": {
+    "header": {
+      "title": "Analyze Your Business",
+      "subtitle": "Track insights, optimize performance, and grow smarter with AI."
+    },
+    "steps": [
+      {
+        "title": "1. Setup Your Business Profile",
+        "steps": [
+          "Begin by creating a complete digital identity of your business within the platform by entering essential details such as business name, category, size, and operational model.",
+          "Select your business type (e.g., retail, service, wholesale, manufacturing) to ensure that all future analytics and recommendations are tailored specifically to your industry.",
+          "Provide location, target market, and scale of operations so the system can align insights with regional trends and business environment factors.",
+          "Optionally configure additional attributes such as working hours, product categories, and pricing structure to improve accuracy of analysis."
+        ],
+        "purpose": [
+          "To establish a strong foundational context that allows the system to understand the nature and structure of your business.",
+          "To enable intelligent personalization of dashboards, analytics, and recommendations based on your specific business domain.",
+          "To ensure that all future data inputs are interpreted correctly within the right business context, avoiding generic or irrelevant insights.",
+          "To prepare the system for benchmarking your performance against similar businesses in your category."
+        ],
+        "output": [
+          "A fully structured and categorized business profile representing your real-world operations.",
+          "A personalized dashboard environment configured according to your business type and goals.",
+          "A system ready to accurately process, interpret, and analyze incoming business data.",
+          "Improved relevance and precision in all future AI-generated insights and recommendations."
+        ]
+      },
+      {
+        "title": "2. Add Your Business Data",
+        "steps": [
+          "Continuously input daily, weekly, or monthly sales data to build a timeline of your revenue performance.",
+          "Record all types of expenses including operational costs, fixed overheads, and variable expenditures to maintain a complete financial picture.",
+          "Manage inventory by tracking stock levels, product movement, restocking cycles, and potential shortages.",
+          "Ensure consistency and accuracy in data entry to maintain the reliability of analysis results over time."
+        ],
+        "purpose": [
+          "To create a comprehensive dataset that reflects the actual performance and operations of your business.",
+          "To provide the AI system with sufficient and accurate data required for meaningful and reliable analysis.",
+          "To enable tracking of financial health, operational efficiency, and business growth over time.",
+          "To build a strong historical data foundation for future predictions and trend analysis."
+        ],
+        "output": [
+          "A well-organized and continuously updated repository of business data.",
+          "Structured datasets ready for processing and analysis by the system.",
+          "Improved data quality leading to more accurate insights and forecasts.",
+          "A clear digital record of your business activities and financial performance."
+        ]
+      },
+      {
+        "title": "3. Trigger Analysis",
+        "steps": [
+          "Initiate the analysis process manually or automatically by activating the ‘Analyze’ feature within the dashboard.",
+          "Securely transmit all collected business data to the analysis engine for processing.",
+          "Perform data validation and preprocessing steps such as cleaning inconsistencies, handling missing values, and standardizing formats.",
+          "Prepare the dataset for advanced analytical models and AI processing."
+        ],
+        "purpose": [
+          "To convert raw, unstructured business data into a clean and analyzable format.",
+          "To ensure the accuracy, consistency, and reliability of data before it is processed by AI models.",
+          "To activate the core analysis pipeline that transforms data into insights.",
+          "To eliminate errors and inconsistencies that could affect the quality of results."
+        ],
+        "output": [
+          "Validated and structured datasets optimized for analysis.",
+          "A fully prepared data pipeline ready for AI-driven processing.",
+          "Reduced data errors and improved consistency across all inputs.",
+          "A reliable foundation for generating high-quality insights."
+        ]
+      },
+      {
+        "title": "4. AI-Driven Business Analysis",
+        "steps": [
+          "Analyze sales data to identify patterns such as peak periods, seasonal trends, and revenue fluctuations.",
+          "Evaluate profit and loss by comparing total revenue against all recorded expenses to determine financial health.",
+          "Examine inventory performance to detect inefficiencies such as overstocking, understocking, or slow-moving products.",
+          "Apply AI models to uncover hidden correlations, anomalies, and opportunities that may not be visible through manual analysis.",
+          "Generate predictive insights based on historical data to forecast future performance and trends."
+        ],
+        "purpose": [
+          "To transform raw business data into meaningful, actionable insights using advanced analytical techniques.",
+          "To help business owners understand not just what is happening, but why it is happening.",
+          "To identify strengths, weaknesses, risks, and opportunities within the business.",
+          "To support data-driven decision-making and strategic planning.",
+          "To provide predictive intelligence that helps anticipate future outcomes."
+        ],
+        "output": [
+          "Comprehensive AI-generated insights covering sales, expenses, and operational efficiency.",
+          "Key performance indicators such as profit margins, growth rates, and efficiency scores.",
+          "A detailed business health score representing overall performance.",
+          "Predictive forecasts and trend analysis for future planning.",
+          "Identification of critical areas requiring attention or improvement."
+        ]
+      },
+      {
+        "title": "5. View Insights & Take Strategic Action",
+        "steps": [
+          "Access a visually rich dashboard that presents insights through charts, graphs, and summaries.",
+          "Review key performance indicators and business scores to understand overall performance.",
+          "Analyze detailed reports highlighting trends, strengths, weaknesses, and opportunities.",
+          "Follow AI-generated recommendations to optimize operations, reduce costs, and increase revenue.",
+          "Continuously monitor performance and refine strategies based on updated insights."
+        ],
+        "purpose": [
+          "To empower business owners with clear, understandable, and actionable insights.",
+          "To bridge the gap between data analysis and real-world decision-making.",
+          "To enable continuous improvement through informed strategic actions.",
+          "To help businesses adapt quickly to changing market conditions and internal performance trends.",
+          "To drive long-term growth, efficiency, and sustainability."
+        ],
+        "output": [
+          "An interactive and user-friendly dashboard displaying all key insights.",
+          "A clear and actionable plan for improving business performance.",
+          "Better decision-making supported by data and AI-driven recommendations.",
+          "Enhanced operational efficiency, profitability, and growth potential.",
+          "A continuously improving business powered by intelligent insights."
+        ]
+      }
+    ]
+  },
+  "chatbot": {
+    "title": "AI Chatbot",
+    "greeting": "Hi! How can I help you?",
+    "type": "Type a message...",
+    "error": "Something went wrong",
+    "server_error": "Server error. Please try again.",
+    "view_history": "View History",
+    "delete_history": "Delete History",
+    "listening": "Listening...",
+    "no_messages": "No messages yet"
+  },
+  "cta": {
+    "title": "Start Your Journey Today",
+    "description": "Join now to unlock powerful features and grow your business.",
+    "start": "Start Now",
+    "login": "Login"
+  },
+
+  "daily_dashboard": {
+    "daily": "Daily",
+    "daily_title": "Daily Dashboard",
+    "no_data_title": "No Data Available",
+    "no_data_desc": "No dashboard data found for the selected date.\nTry selecting another date or add business data.",
+    "go_back": "Go Back"
+  },
+
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "items": [
+      {
+        "question": "What is this application and how does it help my business?",
+        "answer": "This application is a complete business management and analysis platform designed for small and medium-sized businesses. It helps you track inventory, sales, and expenses while providing AI-driven insights to improve decision-making and growth."
+      },
+      {
+        "question": "How do I add new inventory items into the system?",
+        "answer": "Go to the inventory section and select 'Add Inventory'. Enter details like name, quantity, price, and category to keep your stock organized and accurate."
+      },
+      {
+        "question": "Can I edit or delete existing inventory items?",
+        "answer": "Yes, you can update or remove items anytime to keep your data accurate and up to date."
+      },
+      {
+        "question": "What are AI suggestions and how do they work?",
+        "answer": "AI suggestions analyze your business data to provide recommendations like restocking, reducing expenses, or optimizing pricing."
+      },
+      {
+        "question": "Is my data secure and where is it stored?",
+        "answer": "Your data is stored securely with encryption and controlled access, ensuring privacy and safety."
+      },
+      {
+        "question": "Can I use this application on different devices?",
+        "answer": "Yes, your data syncs across mobile, tablet, and desktop so you can manage your business anywhere."
+      }
+    ]
+  },
+
+  "dashboard_features": {
+    "title": "Business Intelligence Hub",
+    "subtitle": "Everything you need to analyze, manage, and grow your business smarter.",
+    "items": [
+      {
+        "title": "AI-Powered Insights",
+        "desc": "Leverage advanced AI to analyze your business data and uncover patterns, trends, and hidden opportunities. Make smarter, data-driven decisions.",
+        "icon": "analytics"
+      },
+      {
+        "title": "Expense Management",
+        "desc": "Track and manage all your business expenses in one place. Reduce unnecessary costs and maintain better financial control.",
+        "icon": "wallet"
+      },
+      {
+        "title": "Sales Tracking",
+        "desc": "Monitor your sales performance in real time with daily and monthly insights. Identify trends and grow your business effectively.",
+        "icon": "chart"
+      },
+      {
+        "title": "Growth Recommendations",
+        "desc": "Receive smart suggestions to improve efficiency, increase revenue, and scale your business with actionable insights.",
+        "icon": "growth"
+      },
+      {
+        "title": "Secure Data",
+        "desc": "Keep your business data safe with strong encryption and secure storage systems ensuring complete privacy and protection.",
+        "icon": "lock"
+      },
+      {
+        "title": "Fast Performance",
+        "desc": "Enjoy a fast and smooth experience with optimized performance across all devices and seamless navigation.",
+        "icon": "speed"
+      }
+    ]
+  },
+
+  "footer": {
+    "description": "AI-powered business intelligence platform that helps you analyze, optimize, and scale smarter.",
+
+    "offer_title": "What We Offer",
+    "offer": [
+      "Sales & Revenue Tools",
+      "Expense Management",
+      "Inventory Solutions",
+      "AI Business Coaching"
+    ],
+
+    "help_title": "Help Center",
+    "help": [
+      "Quick Start",
+      "Sales & Expenses",
+      "Inventory",
+      "AI"
+    ],
+
+    "legal": "Legal",
+    "about": "About Us",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions",
+    "security": "Security",
+
+    "contact": "Contact",
+    "email": "support@udyamix.com",
+    "phone": "+91 9876543210",
+    "location": "India",
+
+    "follow": "Follow Us",
+
+    "copyright": "© 2026 Udyamix. All rights reserved."
+  },
+
+  "help_widget": {
+    "title": "Need Help?",
+    "description": "Get instant support from our AI assistant. Ask questions, solve issues, and explore features easily.",
+    "button": "Get Help Now"
+  },
+
+  "hero": {
+    "title_line1": "Smart Business",
+    "title_line2": "Starts Here",
+    "description": "Empowering small and medium businesses with AI-powered insights, smart tracking, and easy business management.",
+
+    "join_text": "Join Udyamix to analyze your business and grow smarter.",
+
+    "get_started": "Get Started",
+    "login": "Login",
+    "explore_features": "Explore Features"
+  },
+
+  "inventories": {
+    "add_inventory": "Add Inventory",
+    "update_inventory": "Update Inventory",
+    "product_name": "Product Name",
+    "brand_name": "Brand Name",
+    "quantity": "Quantity",
+    "price_per_unit": "Price per Unit",
+    "qty": "Qty",
+    "added": "Added",
+    "updated": "Updated"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "update": "Update",
+    "delete": "Delete"
+  },
+
+  "kpi": {
+    "dashboard": "Dashboard",
+
+    "sales": "Sales",
+    "expenses": "Expenses",
+    "cash_flow": "Cash Flow",
+    "pending_cod": "Pending COD",
+    "receivables": "Receivables",
+    "profit": "Profit",
+    "loss": "Loss",
+
+    "sales_vs_expenses_trend": "Sales vs Expenses Trend",
+    "sales_and_expenses": "Sales & Expenses",
+    "expense_breakdown": "Expense Breakdown",
+    "profit_ratio": "Profit Ratio",
+    "sales_vs_receivables": "Sales vs Receivables",
+    "rag_indicators": "RAG Indicators",
+
+    "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+  },
+
+  "monthly": {
+    "title": "Monthly",
+    "no_data": "No data available for this month"
+  },
+
+  "profile_privacy": {
+    "intro": "Your privacy is important to us. This section explains how we collect, use, and protect your information when you use our application.",
+
+    "data_collection": {
+      "title": "Data We Collect",
+      "desc": "We collect only the necessary information required to provide and improve our services:",
+      "points": [
+        "Personal details such as name, email, and phone number.",
+        "Business-related information linked to your account.",
+        "Usage data such as app interactions and preferences."
+      ]
+    },
+
+    "data_usage": {
+      "title": "How We Use Your Data",
+      "desc": "Your information is used to enhance your experience:",
+      "points": [
+        "To provide and maintain app functionality.",
+        "To personalize content and recommendations.",
+        "To improve performance and fix issues."
+      ]
+    },
+
+    "security": {
+      "title": "Security",
+      "desc": "We follow industry best practices to protect your data:",
+      "points": [
+        "Secure storage and encrypted communication.",
+        "Restricted access to authorized systems only."
+      ]
+    },
+
+    "user_control": {
+      "title": "Your Rights & Control",
+      "desc": "You have full control over your data:",
+      "points": [
+        "You can update your profile anytime.",
+        "You can request deletion of your data.",
+        "You can manage permissions in settings."
+      ]
+    },
+
+    "data_retention": {
+      "title": "Data Retention",
+      "desc": "We retain your data only as long as necessary to provide services and comply with legal obligations."
+    },
+
+    "third_party": {
+      "title": "Third-Party Services",
+      "desc": "We may use trusted third-party services to improve app functionality. These services follow strict privacy standards."
+    },
+
+    "contact": {
+      "title": "Contact Us",
+      "desc": "If you have any questions or concerns about privacy, please contact our support team."
+    }
+  },
+
+  "quick_actions": {
+    "upload_photo": "Upload Photo",
+    "upload_file": "Upload File",
+    "add_sale": "Add Sale",
+    "add_expense": "Add Expense",
+
+    "capture_photo": "Capture Photo",
+    "select_file": "Select File",
+    "close": "Close",
+
+    "photo_uploaded": "Photo uploaded successfully",
+    "file_uploaded": "File uploaded successfully",
+    "upload_failed": "Upload failed. Please try again."
+  },
+
+  "weekly": {
+    "title": "Weekly",
+    "no_data": "No data available for this week"
+  },
+  "stock": {
+    "title": "Stock Intelligence",
+    "total_stock": "Total Stock",
+    "total_value": "Total Value",
+    "profit_per_stock": "Profit/Stock",
+    "fast": "Fast",
+    "slow": "Slow",
+    "dead": "Dead",
+    "reorder": "Reorder",
+    "insights": "Insights",
+    "fast_items": "Fast Moving Items",
+    "fast_desc": "High demand products",
+    "slow_items": "Slow Moving Items",
+    "slow_desc": "Low demand products",
+    "dead_items": "Dead Stock",
+    "dead_desc": "No sales activity",
+    "reorder_items": "Reorder Alert",
+    "reorder_desc": "Stock below demand",
+    "inventory_items": "Inventory Items",
+    "stock": "Stock",
+    "sales": "Sales",
+    "days": "Days Left",
+    "profit": "Profit",
+    "no_stock": "No Stock Available"
+  }
+
+}
