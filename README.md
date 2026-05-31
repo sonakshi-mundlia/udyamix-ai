@@ -96,17 +96,22 @@ Example AI Insight:
 
 # System Architecture
 
-Flutter App
-↓
-FastAPI Backend
-↓
-PostgreSQL Database
-↓
-AI Processing Engine
-↓
-Analytics + Insights
-↓
-Flutter Dashboard UI
+ Flutter App (Mobile Interface)
+        │
+        ▼
+ FastAPI Backend (API Layer + Business Logic)
+        │
+        ▼
+ PostgreSQL Database (Data Storage)
+        │
+        ▼
+ AI Processing Engine (OCR + ML + Data Analysis)
+        │
+        ▼
+ Analytics & Insight Generator
+        │
+        ▼
+ Flutter Dashboard (Charts, Reports, Live Insights)
 
 
 # Real-World Use Cases
