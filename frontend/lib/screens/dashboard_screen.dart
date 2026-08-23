@@ -24,7 +24,6 @@ import 'sales_screen.dart';
 import 'expenses_screen.dart';
 import 'ai_insights_screen.dart';
 import 'profile_screen.dart';
-import 'stock_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -148,7 +147,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(height: 20),
 
                   // CALENDAR
-                  if (hasAnyData()) _dateCalendar(t),
+                  if (dashboardProvider.hasHistoricalData) _dateCalendar(t),
 
                   const SizedBox(height: 20),
 
@@ -179,39 +178,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           child: _inventoryButton(t),
                         ),
                         const SizedBox(width: 10),
-
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const StockDashboardScreen(),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              height: 70,
-                              decoration: BoxDecoration(
-                                color: Colors.blue.shade100,
-                                borderRadius: BorderRadius.circular(14),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.08),
-                                    blurRadius: 6,
-                                  )
-                                ],
-                              ),
-                              child: Center(
-                                child: Text(t("dashboard.see_stock"),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
                       ],
                     )
                   /// ======================================================
@@ -622,10 +588,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }) {
     return GestureDetector(
       onTap: () async {
-        await Navigator.push(
+        final result = await Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => screen),
         );
+
+        if (result == true) {
+          await _loadData(date: selectedDate);
+        }
 
         onReturn?.call();
       },

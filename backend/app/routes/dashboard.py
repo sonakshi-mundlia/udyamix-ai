@@ -65,39 +65,7 @@ def dashboard(
         daily = dashboard_data["daily"]
         weekly = dashboard_data["weekly"]
         monthly = dashboard_data["monthly"]
-
-        total = {
-            "sales": daily.sales + weekly.sales + monthly.sales,
-            "expenses": daily.expenses + weekly.expenses + monthly.expenses,
-            "cashFlow": daily.cashFlow + weekly.cashFlow + monthly.cashFlow,
-            "profit": daily.profit + weekly.profit + monthly.profit,
-            "loss": daily.loss + weekly.loss + monthly.loss,
-            "pendingCOD": daily.pendingCOD + weekly.pendingCOD + monthly.pendingCOD,
-            "receivables": daily.receivables + weekly.receivables + monthly.receivables,
-
-            # Merge trends
-            "salesTrend": (
-                    daily.salesTrend +
-                    weekly.salesTrend +
-                    monthly.salesTrend
-            ),
-
-            "expensesTrend": (
-                    daily.expensesTrend +
-                    weekly.expensesTrend +
-                    monthly.expensesTrend
-            ),
-
-            # Combine expense categories
-            "expenseCategories": {
-                **daily.expenseCategories,
-                **weekly.expenseCategories,
-                **monthly.expenseCategories,
-            },
-
-            "date": daily.date.isoformat(),
-            "startDate": daily.startDate.isoformat(),
-        }
+        total = dashboard_data["total"]
 
         return {
             "success": True,
@@ -108,8 +76,6 @@ def dashboard(
                 "daily": dashboard_response_to_dict(daily),
                 "weekly": dashboard_response_to_dict(weekly),
                 "monthly": dashboard_response_to_dict(monthly),
-
-                # ✅ NEW TOTAL
                 "total": total,
 
                 "hasSales": dashboard_data["hasSales"],

@@ -113,3 +113,4 @@ def generate_embeddings(
     )
 
     return embeddings.tolist()
+

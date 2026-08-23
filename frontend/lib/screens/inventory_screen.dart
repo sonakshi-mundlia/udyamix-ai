@@ -121,62 +121,100 @@ class _InventoryScreenState extends State<InventoryScreen> {
               ),
 
               /// 📦 CONTENT
+              /// 📦 CONTENT
               Expanded(
                 child: items.isEmpty
                     ? Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 40,
-                      horizontal: 30,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
-                          blurRadius: 10,
-                        )
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.inventory_2_outlined,
-                          size: 70,
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          t("inventory.no_inventory"),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
+                  child: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => InventoryWidget(
+                          items: const [],
+                          onAdd: (item) async {
+                            await provider.addItem(item);
+                            await provider.fetchInventory();
 
-                        /// ➕ BUTTON INSIDE SAME CONTAINER
-                        GestureDetector(
+                            if (mounted) {
+                              Navigator.of(context).pop();
+                            }
+                          },
+                          onUpdate: (i, item) async {
+                            await provider.updateItem(
+                              item.id.toString(),
+                              item,
+                            );
+                            await provider.fetchInventory();
+                          },
+                          onDelete: (i) async {
+                            if (provider.items.isNotEmpty) {
+                              await provider.deleteItem(
+                                provider.items[i].id.toString(),
+                              );
+                              await provider.fetchInventory();
+                            }
+                          },
+                        ),
+                      );
+                    },
+                    child: Container(
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Icon(
+                        Icons.add,
+                        color: Colors.white,
+                        size: 36,
+                      ),
+                    ),
+                  ),
+                )
+                    : Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding,
+                  ),
+                  child: Column(
+                    children: [
+
+                      /// ➕ ADD BUTTON
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GestureDetector(
                           onTap: () {
                             showDialog(
                               context: context,
                               builder: (_) => InventoryWidget(
-                                items: const [],
-                                onAdd: provider.addItem,
-                                onUpdate: (i, item) =>
-                                    provider.updateItem(item.id.toString(), item),
-                                onDelete: (i) =>
-                                    provider.deleteItem(provider.items[i].id.toString()),
+                                items: items,
+                                onAdd: (item) async {
+                                  await provider.addItem(item);
+                                  await provider.fetchInventory();
+
+                                  if (mounted) {
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                                onUpdate: (i, item) async {
+                                  await provider.updateItem(
+                                    item.id.toString(),
+                                    item,
+                                  );
+                                  await provider.fetchInventory();
+                                },
+                                onDelete: (i) async {
+                                  await provider.deleteItem(
+                                    provider.items[i].id.toString(),
+                                  );
+                                  await provider.fetchInventory();
+                                },
                               ),
                             );
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 20,
-                            ),
+                            width: 48,
+                            height: 48,
                             decoration: BoxDecoration(
                               color: Colors.blue,
                               borderRadius: BorderRadius.circular(12),
@@ -187,31 +225,48 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                )
-                    : Padding(
-                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-                  child: InventoryWidget(
-                    items: items,
-                    onAdd: (item) async {
-                      await provider.addItem(item);
-                      await provider.fetchInventory();
-                      if (mounted) setState(() {});
-                    },
-                    onUpdate: (i, item) async {
-                      await provider.updateItem(item.id.toString(), item);
-                      await provider.fetchInventory();
-                      if (mounted) setState(() {});
-                    },
-                    onDelete: (i) async {
-                      await provider.deleteItem(
-                        provider.items[i].id.toString(),
-                      );
-                      await provider.fetchInventory();
-                      if (mounted) setState(() {});
-                    },
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      /// 📋 INVENTORY LIST
+                      Expanded(
+                        child: InventoryWidget(
+                          items: items,
+                          onAdd: (item) async {
+                            await provider.addItem(item);
+                            await provider.fetchInventory();
+
+                            if (mounted) {
+                              setState(() {});
+                            }
+                          },
+                          onUpdate: (i, item) async {
+                            await provider.updateItem(
+                              item.id.toString(),
+                              item,
+                            );
+
+                            await provider.fetchInventory();
+
+                            if (mounted) {
+                              setState(() {});
+                            }
+                          },
+                          onDelete: (i) async {
+                            await provider.deleteItem(
+                              provider.items[i].id.toString(),
+                            );
+
+                            await provider.fetchInventory();
+
+                            if (mounted) {
+                              setState(() {});
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

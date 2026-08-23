@@ -128,23 +128,6 @@ class DailyDashboard extends StatelessWidget {
                   height: 1.4,
                 ),
               ),
-
-              const SizedBox(height: 20),
-
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 12,
-                  ),
-                ),
-                child: Text(t('daily_dashboard.go_back')),
-              ),
             ],
           ),
         ),

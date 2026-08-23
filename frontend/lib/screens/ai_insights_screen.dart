@@ -15,7 +15,7 @@ class AiInsightsScreen extends StatefulWidget {
 class _AiInsightsScreenState extends State<AiInsightsScreen> {
 
   /// null = ALL insights
-  int? _selectedWindow;
+  String? _selectedWindow = '7';
 
   late Future<List<AIInsightModel>> _insightsFuture;
 
@@ -24,30 +24,24 @@ class _AiInsightsScreenState extends State<AiInsightsScreen> {
     super.initState();
 
     /// Default = ALL insights
-    _insightsFuture = _loadInsights(null);
+    _insightsFuture = _loadInsights('7');
   }
 
-  Future<List<AIInsightModel>> _loadInsights(int? window) async {
+  Future<List<AIInsightModel>> _loadInsights(String? window) async {
     final lang = context.read<LanguageProvider>();
 
     try {
-      debugPrint("💡 Fetching insights...");
-
       final insights = await ApiService.fetchInsights(
-        window: window ?? 0, // FIXED HERE
+        window: window ?? '7',
         lang: lang.currentLanguage,
       );
-
-      debugPrint("💡 Fetched ${insights.length} insights.");
-
       return insights;
     } catch (e) {
-      debugPrint("💡 ERROR loading insights: $e");
       return [];
     }
   }
 
-  void _onWindowSelected(int? window) {
+  void _onWindowSelected(String? window) {
     setState(() {
       _selectedWindow = window;
       _insightsFuture = _loadInsights(window);
@@ -81,21 +75,21 @@ class _AiInsightsScreenState extends State<AiInsightsScreen> {
 
                   _windowButton(
                     label: "All",
-                    window: null,
+                    window: 'all',
                   ),
 
                   const SizedBox(width: 10),
 
                   _windowButton(
                     label: t('ai_insights.7_days'),
-                    window: 7,
+                    window: '7',
                   ),
 
                   const SizedBox(width: 10),
 
                   _windowButton(
                     label: t('ai_insights.30_days'),
-                    window: 30,
+                    window: '30',
                   ),
                 ],
               ),
@@ -160,7 +154,7 @@ class _AiInsightsScreenState extends State<AiInsightsScreen> {
 
   Widget _windowButton({
     required String label,
-    required int? window,
+    required String? window,
   }) {
 
     final isSelected = _selectedWindow == window;
@@ -317,33 +311,103 @@ class _AiInsightsScreenState extends State<AiInsightsScreen> {
                 /// EXTRA DATA
                 _infoRow(
                   t('ai_insights.urgency'),
-                  extra.urgency,
+                  extra.urgency.level,
+                ),
+
+                _infoRow(
+                  t('ai_insights.urgency_reason'),
+                  extra.urgency.reason,
                 ),
 
                 _infoRow(
                   t('ai_insights.root_cause'),
-                  extra.rootCause,
+                  extra.rootCause.primary,
+                ),
+
+                if (extra.rootCause.possibleCauses.isNotEmpty)
+                  _infoRow(
+                    t('ai_insights.possible_causes'),
+                    extra.rootCause.possibleCauses.join(', '),
+                  ),
+
+                if (extra.rootCause.evidence.isNotEmpty)
+                  _infoRow(
+                    t('ai_insights.evidence'),
+                    extra.rootCause.evidence.join(', '),
+                  ),
+
+                _infoRow(
+                  t('ai_insights.confidence'),
+                  '${(extra.rootCause.confidence * 100).toStringAsFixed(0)}%',
                 ),
 
                 _infoRow(
                   t('ai_insights.impact_value'),
-                  extra.impactValue.toString(),
+                  extra.impact.financialValue?.toString() ?? 'Not available',
                 ),
 
-                if (extra.formula.isNotEmpty)
+                _infoRow(
+                  t('ai_insights.customer_impact'),
+                  extra.impact.customerImpact.isEmpty
+                      ? 'Not available'
+                      : extra.impact.customerImpact,
+                ),
+
+                _infoRow(
+                  t('ai_insights.business_risk'),
+                  extra.impact.businessRisk,
+                ),
+
+                if (extra.impact.financialImpactReason.isNotEmpty)
+                  _infoRow(
+                    t('ai_insights.financial_impact_reason'),
+                    extra.impact.financialImpactReason,
+                  ),
+
+                if (extra.formula.name.isNotEmpty)
                   _infoRow(
                     t('ai_insights.formula'),
-                    extra.formula,
+                    extra.formula.result.isNotEmpty
+                        ? extra.formula.result
+                        : 'Not available',
+                  ),
+
+                if (extra.comparison.currentPeriod != null)
+                  _infoRow(
+                    t('ai_insights.current_period'),
+                    extra.comparison.currentPeriod.toString(),
+                  ),
+
+                if (extra.comparison.previousPeriod != null)
+                  _infoRow(
+                    t('ai_insights.previous_period'),
+                    extra.comparison.previousPeriod.toString(),
+                  ),
+
+                if (extra.comparison.difference != null)
+                  _infoRow(
+                    t('ai_insights.difference'),
+                    extra.comparison.difference.toString(),
+                  ),
+
+                if (extra.comparison.percentageChange != null)
+                  _infoRow(
+                    t('ai_insights.percentage_change'),
+                    '${extra.comparison.percentageChange}%',
+                  ),
+
+                if (extra.recommendation.priority.isNotEmpty)
+                  _infoRow(
+                    t('ai_insights.recommendation_priority'),
+                    extra.recommendation.priority,
                   ),
 
                 /// ACTION PLAN
                 if (extra.actionPlan.isNotEmpty) ...[
-
                   const SizedBox(height: 12),
 
                   Text(
                     t('ai_insights.action_plan'),
-
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
@@ -354,21 +418,24 @@ class _AiInsightsScreenState extends State<AiInsightsScreen> {
 
                   ...extra.actionPlan.map(
                         (step) => Padding(
-                      padding:
-                      const EdgeInsets.only(
+                      padding: const EdgeInsets.only(
                         bottom: 6,
                       ),
-
                       child: Row(
                         crossAxisAlignment:
                         CrossAxisAlignment.start,
-
                         children: [
-
-                          const Text("• "),
+                          Text(
+                            '${step.step}. ',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
 
                           Expanded(
-                            child: Text(step),
+                            child: Text(
+                              step.action,
+                            ),
                           ),
                         ],
                       ),

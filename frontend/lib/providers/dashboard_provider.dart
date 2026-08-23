@@ -25,20 +25,6 @@ class DashboardProvider extends ChangeNotifier {
       dashboardData = await ApiService.getDashboard(
         date: selectedDate,
       );
-
-      // DEBUG LOGS
-      print("========== DASHBOARD ==========");
-
-      print("DAILY SALES: ${dashboardData?.daily.sales}");
-      print("WEEKLY SALES: ${dashboardData?.weekly.sales}");
-      print("MONTHLY SALES: ${dashboardData?.monthly.sales}");
-      print("TOTAL SALES: ${dashboardData?.total.sales}");
-
-      print("DAILY TREND: ${dashboardData?.daily.salesTrend}");
-      print("WEEKLY TREND: ${dashboardData?.weekly.salesTrend}");
-      print("MONTHLY TREND: ${dashboardData?.monthly.salesTrend}");
-      print("TOTAL TREND: ${dashboardData?.total.salesTrend}");
-
     } catch (e) {
       print("Error loading dashboard: $e");
 
@@ -119,6 +105,14 @@ class DashboardProvider extends ChangeNotifier {
             _hasTrend(total.expensesTrend)
     );
   }
+  bool get hasHistoricalData {
+    if (dashboardData == null) {
+      return false;
+    }
+
+    return dashboardData!.total.sales > 0 ||
+        dashboardData!.total.expenses > 0;
+  }
 
   /// =========================================================
   /// HAS SALES
@@ -146,6 +140,8 @@ class DashboardProvider extends ChangeNotifier {
     );
   }
 
+
+
   /// =========================================================
   /// HAS EXPENSES
   /// =========================================================
@@ -171,6 +167,7 @@ class DashboardProvider extends ChangeNotifier {
             _hasTrend(total.expensesTrend)
     );
   }
+
 
   /// =========================================================
   /// TOTAL HELPERS

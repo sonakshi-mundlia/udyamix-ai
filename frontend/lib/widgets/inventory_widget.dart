@@ -223,25 +223,6 @@ class _InventoryWidgetState extends State<InventoryWidget> {
         spacing: padding,
         runSpacing: padding,
         children: [
-          /// ➕ ADD CARD
-          SizedBox(
-            width: containerWidth,
-            child: GestureDetector(
-              onTap: () => _showForm(),
-              child: Container(
-                height: 150,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blue, width: 2),
-                  borderRadius: BorderRadius.circular(14),
-                  color: Colors.white,
-                ),
-                child: const Center(
-                  child: Icon(Icons.add, size: 40, color: Colors.blue),
-                ),
-              ),
-            ),
-          ),
-
           /// ITEMS
           ...widget.items.asMap().entries.map((entry) {
             final index = entry.key;

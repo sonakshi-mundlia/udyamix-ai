@@ -128,7 +128,6 @@ class _LoginScreenState extends State<LoginScreen> {
         businessId: _selectedBusiness!['business_id'],
       );
 
-      print(result);
 
       final prefs = await SharedPreferences.getInstance();
 

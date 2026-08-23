@@ -253,7 +253,7 @@ def get_dashboard_data(
         trend_days=1
     )
 
-    daily.date = end_day
+    daily.date = start_day
     daily.startDate = start_day
 
     # =========================================================
@@ -271,7 +271,7 @@ def get_dashboard_data(
         trend_days=7
     )
 
-    weekly.date = end_week
+    weekly.date = start_week
     weekly.startDate = start_week
 
     # =========================================================
@@ -296,7 +296,7 @@ def get_dashboard_data(
         trend_days=30
     )
 
-    monthly.date = next_month
+    monthly.date = start_month
     monthly.startDate = start_month
 
     # =========================================================
@@ -339,4 +339,7 @@ def get_dashboard_data(
                 monthly.expenses > 0 or
                 total.expenses > 0
         ),
+
     }
+
+

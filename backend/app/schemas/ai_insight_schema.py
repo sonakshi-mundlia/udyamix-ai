@@ -12,11 +12,11 @@ class MetricData(BaseModel):
 
     current_value: float = 0
 
-    previous_value: float = 0
+    previous_value: Optional[float] = None
 
-    change_value: float = 0
+    change_value: Optional[float] = None
 
-    change_percentage: float = 0
+    change_percentage: Optional[float] = None
 
     trend: str = "stable"
 
@@ -54,9 +54,13 @@ class RootCauseData(BaseModel):
 # =========================================================
 
 class ImpactData(BaseModel):
-    financial_value: float = 0
+    financial_value: Optional[float] = None
 
-    estimated_revenue_loss: float = 0
+    estimated_revenue_loss: Optional[float] = None
+
+    financial_impact_available: bool = False
+
+    financial_impact_reason: str = ""
 
     customer_impact: str = ""
 
@@ -82,13 +86,13 @@ class FormulaData(BaseModel):
 # =========================================================
 
 class ComparisonData(BaseModel):
-    previous_period: float = 0
+    previous_period: Optional[float] = None
 
     current_period: float = 0
 
-    difference: float = 0
+    difference: Optional[float] = None
 
-    percentage_change: float = 0
+    percentage_change: Optional[float] = None
 
 
 # =========================================================
@@ -178,3 +182,4 @@ class AIInsightResponse(BaseModel):
 
     class Config:
         from_attributes = True
+

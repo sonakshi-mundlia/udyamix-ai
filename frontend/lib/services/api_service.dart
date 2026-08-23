@@ -1,7 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:dio/dio.dart';
 
 import '../models/dashboard_model.dart';
 import '../models/dashboard_background_model.dart';
@@ -11,41 +10,14 @@ import '../models/sale_model.dart';
 import '../models/user_model.dart';
 import '../models/ocr_result_model.dart';
 import '../models/inventory_model.dart';
-import '../providers/business_provider.dart';
+import '../services/dio_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String _baseUrl = 'http://127.0.0.1:8000';
-
   // ======================
-  // AUTH + BUSINESS HEADERS
+  // AUTH
   // ======================
-  static Future<Map<String, String>> _headers() async {
-    final prefs = await SharedPreferences.getInstance();
 
-    final token = prefs.getString('access_token');
-    final businessId = prefs.getString('selected_business_id');
-
-    print('🔐 TOKEN: $token');
-    print('🏢 BUSINESS ID: $businessId');
-
-    if (token == null) {
-      throw Exception("No access token found");
-    }
-
-    if (businessId == null) {
-      throw Exception("No business selected");
-    }
-
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-      'X-Business-Id': businessId,
-    };
-  }
-
-  // ======================
-  // REGISTER
-  // ======================
   static Future<Map<String, dynamic>> register({
     required String name,
     required String mobile,
@@ -53,99 +25,111 @@ class ApiService {
     required String password,
     required String businessName,
   }) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl/auth/register'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'name': name,
-        'mobile': mobile,
-        'email': email,
-        'password': password,
-        'business_name': businessName,
-      }),
-    );
+    try {
+      final response = await DioClient.dio.post(
+        '/auth/register',
+        data: {
+          'name': name,
+          'mobile': mobile,
+          'email': email,
+          'password': password,
+          'business_name': businessName,
+        },
+      );
 
-    print('📝 REGISTER STATUS: ${response.statusCode}');
-    print('📝 REGISTER BODY: ${response.body}');
-
-    return jsonDecode(response.body);
+      return Map<String, dynamic>.from(response.data);
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Registration failed',
+      );
+    }
   }
 
   // ======================
   // LOGIN – STEP 1
   // ======================
+
   static Future<Map<String, dynamic>> getLoginBusinesses({
     required String mobile,
     String? email,
   }) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl/auth/login/businesses'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'mobile': mobile,
-        if (email != null) 'email': email,
-      }),
-    );
+    try {
+      final response = await DioClient.dio.post(
+        '/auth/login/businesses',
+        data: {
+          'mobile': mobile,
+          if (email != null) 'email': email,
+        },
+      );
 
-    print('🔎 LOGIN BUSINESSES STATUS: ${response.statusCode}');
-    print('🔎 LOGIN BUSINESSES BODY: ${response.body}');
-
-    if (response.statusCode != 200) {
-      throw Exception(response.body);
+      return Map<String, dynamic>.from(response.data);
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to get businesses',
+      );
     }
-
-    return jsonDecode(response.body);
   }
 
   // ======================
   // LOGIN – STEP 2
   // ======================
+
   static Future<Map<String, dynamic>> login({
     required String mobile,
     String? email,
     required String password,
     required String businessId,
   }) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl/auth/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'mobile': mobile,
-        if (email != null) 'email': email,
-        'password': password,
-        'business_id': businessId,
-      }),
-    );
+    try {
+      final response = await DioClient.dio.post(
+        '/auth/login',
+        data: {
+          'mobile': mobile,
+          if (email != null) 'email': email,
+          'password': password,
+          'business_id': businessId,
+        },
+      );
 
-    print('🔑 LOGIN STATUS: ${response.statusCode}');
-    print('🔑 LOGIN BODY: ${response.body}');
-
-    if (response.statusCode != 200) {
-      throw Exception(response.body);
+      return Map<String, dynamic>.from(response.data);
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Login failed',
+      );
     }
-
-    return jsonDecode(response.body);
   }
 
   static Future<UserModel> fetchProfile() async {
-    final url = Uri.parse('$_baseUrl/auth/profile');
-    final response = await http.get(
-      url,
-      headers: await _headers(),
-    );
+    try {
+      final response = await DioClient.dio.get(
+        '/auth/profile',
+      );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return UserModel.fromJson(data);
-    } else {
-      final error = jsonDecode(response.body);
-      throw Exception(error['detail'] ?? 'Failed to fetch profile');
+      return UserModel.fromJson(
+        Map<String, dynamic>.from(response.data),
+      );
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to fetch profile',
+      );
     }
   }
 
   static Future<bool> isLoggedIn() async {
+    // Keep this local check.
+    // It does not need an API request.
     final prefs = await SharedPreferences.getInstance();
+
     final token = prefs.getString('access_token');
+
     return token != null && token.isNotEmpty;
   }
 
@@ -154,145 +138,146 @@ class ApiService {
     String? email,
     String? mobile,
   }) async {
-    final response = await http.put(
-      Uri.parse('$_baseUrl/auth/update-info'),
-      headers: await _headers(),
-      body: jsonEncode({
-        if (name != null) 'name': name,
-        if (email != null) 'email': email,
-        if (mobile != null) 'mobile': mobile,
-      }),
-    );
+    try {
+      final response = await DioClient.dio.put(
+        '/auth/update-info',
+        data: {
+          if (name != null) 'name': name,
+          if (email != null) 'email': email,
+          if (mobile != null) 'mobile': mobile,
+        },
+      );
 
-    print('👤 UPDATE USER STATUS: ${response.statusCode}');
-    print('👤 UPDATE USER BODY: ${response.body}');
-
-    if (response.statusCode != 200) {
-      throw Exception(response.body);
+      return Map<String, dynamic>.from(response.data);
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to update user information',
+      );
     }
-
-    return jsonDecode(response.body);
   }
 
   static Future<Map<String, dynamic>> changePassword({
     required String oldPassword,
     required String newPassword,
   }) async {
-    final response = await http.patch(
-      Uri.parse('$_baseUrl/auth/update-password'),
-      headers: await _headers(),
-      body: jsonEncode({
-        'old_password': oldPassword,
-        'new_password': newPassword,
-      }),
-    );
+    try {
+      final response = await DioClient.dio.patch(
+        '/auth/update-password',
+        data: {
+          'old_password': oldPassword,
+          'new_password': newPassword,
+        },
+      );
 
-    print('🔒 CHANGE PASSWORD STATUS: ${response.statusCode}');
-    print('🔒 CHANGE PASSWORD BODY: ${response.body}');
-
-    if (response.statusCode != 200) {
-      throw Exception(response.body);
+      return Map<String, dynamic>.from(response.data);
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to change password',
+      );
     }
-
-    return jsonDecode(response.body);
   }
 
-  // ------------------------------
-  // UPDATE BUSINESS
-  // ------------------------------
+  // ======================
+  // BUSINESS
+  // ======================
+
   static Future<Map<String, dynamic>> updateBusinessName({
     required String name,
   }) async {
-    final response = await http.put(
-      Uri.parse('$_baseUrl/business/update-name'),
-      headers: await _headers(),
-      body: jsonEncode({
-        'name': name,
-      }),
-    );
+    try {
+      final response = await DioClient.dio.put(
+        '/business/update-name',
+        data: {
+          'name': name,
+        },
+      );
 
-    print('🏢 UPDATE BUSINESS STATUS: ${response.statusCode}');
-    print('🏢 UPDATE BUSINESS BODY: ${response.body}');
-
-    if (response.statusCode != 200) {
-      throw Exception(response.body);
+      return Map<String, dynamic>.from(response.data);
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to update business',
+      );
     }
-
-    return jsonDecode(response.body);
   }
 
-  // ------------------------------
-  // DELETE BUSINESS
-  // ------------------------------
   static Future<Map<String, dynamic>> deleteBusiness() async {
-    final response = await http.delete(
-      Uri.parse('$_baseUrl/business/delete'),
-      headers: await _headers(),
-    );
+    try {
+      final response = await DioClient.dio.delete(
+        '/business/delete',
+      );
 
-    print('🗑️ DELETE BUSINESS STATUS: ${response.statusCode}');
-    print('🗑️ DELETE BUSINESS BODY: ${response.body}');
-
-    if (response.statusCode != 200) {
-      throw Exception(response.body);
+      return Map<String, dynamic>.from(response.data);
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to delete business',
+      );
     }
-
-    return jsonDecode(response.body);
   }
 
   // ======================
   // DASHBOARD
   // ======================
 
-  static Future<DashboardBackgroundModel> getDashboardBackground(String lang) async {
+  static Future<DashboardBackgroundModel> getDashboardBackground(
+      String lang,
+      ) async {
     try {
-      final response = await http.get(
-        Uri.parse('$_baseUrl/dashboard/background'),
-        headers: {
-          ...(await _headers()),
-          "Accept-Language": lang,
-        },
+      final response = await DioClient.dio.get(
+        '/dashboard/background',
+        options: Options(
+          headers: {
+            'Accept-Language': lang,
+          },
+        ),
       );
 
-      if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
-
-        return DashboardBackgroundModel.fromJson(jsonData);
-      } else {
-        throw Exception("Failed to load dashboard");
-      }
+      return DashboardBackgroundModel.fromJson(
+        Map<String, dynamic>.from(response.data),
+      );
     } catch (e) {
-      print("Dashboard API Error: $e");
 
-      // ✅ fallback (VERY IMPORTANT)
       return DashboardBackgroundModel(
-        businessName: "",
+        businessName: '',
         data: [],
         aiError: true,
       );
     }
   }
 
-  /// Get dashboard data, optionally for a specific date
-  static Future<FullDashboardModel> getDashboard({DateTime? date}) async {
-    // Build query parameter if date is provided
-    final query = date != null ? "?date=${date.toIso8601String().split('T').first}" : "";
-    final url = Uri.parse('$_baseUrl/dashboard/metrics$query');
+  static Future<FullDashboardModel> getDashboard({
+    DateTime? date,
+  }) async {
+    try {
+      final response = await DioClient.dio.get(
+        '/dashboard/metrics',
+        queryParameters: {
+          if (date != null)
+            'date': date.toIso8601String().split('T').first,
+        },
+      );
 
-    final response = await http.get(url, headers: await _headers());
+      final decoded = response.data;
 
-    print('📊 DASHBOARD STATUS: ${response.statusCode}');
-    print('📊 DASHBOARD BODY: ${response.body}');
+      final data = decoded['data'] ?? decoded;
 
-    final decoded = jsonDecode(response.body);
-
-    if (response.statusCode != 200) {
-      throw Exception(decoded['detail'] ?? 'Dashboard error');
+      return FullDashboardModel.fromJson(
+        Map<String, dynamic>.from(data),
+      );
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Dashboard error',
+      );
     }
-
-    final data = decoded['data'] ?? decoded;
-
-    return FullDashboardModel.fromJson(data);
   }
 
   // ======================
@@ -300,38 +285,40 @@ class ApiService {
   // ======================
 
   static Future<List<AIInsightModel>> fetchInsights({
-    int window = 7,
+    String? window,
     String lang = 'en',
   }) async {
     try {
-      final headers = {
-        ...(await _headers()),
-        "Accept-Language": lang,
-      };
-
-      final uri = Uri.parse('$_baseUrl/ai-insights/').replace(
-        queryParameters: {"window": window.toString()},
+      final response = await DioClient.dio.get(
+        '/ai-insights/',
+        queryParameters: {
+          'window': window ?? '7' ,
+        },
+        options: Options(
+          headers: {
+            'Accept-Language': lang,
+          },
+        ),
       );
 
-      print('🔐 HEADERS (GET): $headers');
-      print('🌐 LANG: $lang, WINDOW: $window');
-      print('🌐 URI: $uri');
-
-      final response = await http.get(uri, headers: headers);
-      print('💡 STATUS: ${response.statusCode}');
-      print('💡 BODY: ${response.body}');
-
-      if (response.statusCode != 200) {
-        final decoded = jsonDecode(response.body);
-        throw Exception(decoded['detail'] ?? 'Insight fetch error');
+      if (response.data is! List) {
+        throw Exception('Invalid insights response');
       }
 
-      final decoded = jsonDecode(response.body);
-      return (decoded as List)
-          .map((e) => AIInsightModel.fromJson(e))
+      return (response.data as List)
+          .map(
+            (e) => AIInsightModel.fromJson(
+          Map<String, dynamic>.from(e),
+        ),
+      )
           .toList();
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Insight fetch error',
+      );
     } catch (e) {
-      print('💡 ERROR fetching insights: $e');
       rethrow;
     }
   }
@@ -339,238 +326,327 @@ class ApiService {
   // ======================
   // SALES
   // ======================
+
   static Future<Sale> addSale(SaleCreate request) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl/sales/'),
-      headers: await _headers(),
-      body: jsonEncode(request.toJson()),
-    );
+    try {
+      final response = await DioClient.dio.post(
+        '/sales/',
+        data: request.toJson(),
+      );
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Sale.fromJson(jsonDecode(response.body));
+      return Sale.fromJson(
+        Map<String, dynamic>.from(response.data),
+      );
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to add sale',
+      );
     }
-
-    throw Exception('Failed to add sale');
   }
 
   static Future<List<Sale>> getPaidSales() async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/sales/paid'),
-      headers: await ApiService._headers(),
-    );
+    try {
+      final response = await DioClient.dio.get(
+        '/sales/paid',
+      );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> decoded = jsonDecode(response.body);
-      return decoded.map((e) => Sale.fromJson(e)).toList();
-    } else {
-      throw Exception('Failed to fetch sales');
+      return (response.data as List)
+          .map(
+            (e) => Sale.fromJson(
+          Map<String, dynamic>.from(e),
+        ),
+      )
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to fetch sales',
+      );
     }
   }
 
   static Future<List<Sale>> getUnpaidSales() async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/sales/unpaid'),
-      headers: await ApiService._headers(),
-    );
+    try {
+      final response = await DioClient.dio.get(
+        '/sales/unpaid',
+      );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> decoded = jsonDecode(response.body);
-      return decoded.map((e) => Sale.fromJson(e)).toList();
-    } else {
-      throw Exception('Failed to fetch sales');
+      return (response.data as List)
+          .map(
+            (e) => Sale.fromJson(
+          Map<String, dynamic>.from(e),
+        ),
+      )
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to fetch sales',
+      );
     }
   }
 
   static Future<List<Sale>> listSales() async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/sales/record'),
-      headers: await ApiService._headers(),
-    );
+    try {
+      final response = await DioClient.dio.get(
+        '/sales/record',
+      );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> decoded = jsonDecode(response.body);
-      return decoded.map((e) => Sale.fromJson(e)).toList();
-    } else {
-      throw Exception('Failed to fetch sales');
+      return (response.data as List)
+          .map(
+            (e) => Sale.fromJson(
+          Map<String, dynamic>.from(e),
+        ),
+      )
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to fetch sales',
+      );
     }
   }
 
   // ======================
   // EXPENSES
   // ======================
-  static Future<Expense> addExpense(ExpenseCreate request) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl/expenses/'),
-      headers: await _headers(),
-      body: jsonEncode(request.toJson()),
-    );
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return Expense.fromJson(jsonDecode(response.body));
+  static Future<Expense> addExpense(
+      ExpenseCreate request,
+      ) async {
+    try {
+      final response = await DioClient.dio.post(
+        '/expenses/',
+        data: request.toJson(),
+      );
+
+      return Expense.fromJson(
+        Map<String, dynamic>.from(response.data),
+      );
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to add expense',
+      );
     }
-
-    throw Exception('Failed to add sale');
   }
 
   static Future<List<Expense>> getPaidExpenses() async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/expenses/paid'),
-      headers: await ApiService._headers(),
-    );
+    try {
+      final response = await DioClient.dio.get(
+        '/expenses/paid',
+      );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> decoded = jsonDecode(response.body);
-      return decoded.map((e) => Expense.fromJson(e)).toList();
-    } else {
-      throw Exception('Failed to fetch sales');
+      return (response.data as List)
+          .map(
+            (e) => Expense.fromJson(
+          Map<String, dynamic>.from(e),
+        ),
+      )
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to fetch expenses',
+      );
     }
   }
 
   static Future<List<Expense>> getUnpaidExpenses() async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/expenses/paid'),
-      headers: await ApiService._headers(),
-    );
+    try {
+      final response = await DioClient.dio.get(
+        '/expenses/unpaid',
+      );
 
-    if (response.statusCode == 200) {
-      final List<dynamic> decoded = jsonDecode(response.body);
-      return decoded.map((e) => Expense.fromJson(e)).toList();
-    } else {
-      throw Exception('Failed to fetch sales');
+      return (response.data as List)
+          .map(
+            (e) => Expense.fromJson(
+          Map<String, dynamic>.from(e),
+        ),
+      )
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to fetch expenses',
+      );
     }
   }
 
   static Future<List<Expense>> listExpenses() async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/expenses/record'),
-      headers: await ApiService._headers(),
-    );
-    if (response.statusCode == 200) {
-      final List<dynamic> decoded = jsonDecode(response.body);
-      return decoded.map((e) => Expense.fromJson(e)).toList();
-    } else {
-      throw Exception('Failed to fetch sales');
+    try {
+      final response = await DioClient.dio.get(
+        '/expenses/record',
+      );
+
+      return (response.data as List)
+          .map(
+            (e) => Expense.fromJson(
+          Map<String, dynamic>.from(e),
+        ),
+      )
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to fetch expenses',
+      );
     }
   }
 
   // ======================
   // OCR
   // ======================
+
   static Future<OCRResultModel> uploadDocumentOCR({
     required File file,
-    String lang = "en",
+    String lang = 'en',
   }) async {
-    final headers = {
-      ...(await _headers()),
-      "Accept-Language": lang,
-    };
+    try {
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(
+          file.path,
+          filename: file.path.split('/').last,
+        ),
+      });
 
-    headers.remove('Content-Type');
+      final response = await DioClient.dio.post(
+        '/ocr/upload',
+        data: formData,
+        options: Options(
+          headers: {
+            'Accept-Language': lang,
+          },
+        ),
+      );
 
-    final request = http.MultipartRequest(
-      "POST",
-      Uri.parse("$_baseUrl/ocr/upload"),
-    );
-
-    request.headers.addAll(headers);
-    request.files.add(await http.MultipartFile.fromPath("file", file.path));
-
-    final response = await http.Response.fromStream(await request.send());
-
-    print('📄 OCR STATUS: ${response.statusCode}');
-    print('📄 OCR BODY: ${response.body}');
-
-    return OCRResultModel.fromJson(jsonDecode(response.body));
+      return OCRResultModel.fromJson(
+        Map<String, dynamic>.from(response.data),
+      );
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'OCR upload failed',
+      );
+    }
   }
 
   // ======================
   // INVENTORY
   // ======================
-  static Future<InventoryItem> addInventory(String productName, String brand,
-  double? quantity, String unit, int stockQuantity,
-      {double? pricePerUnit}) async {
-    final response = await http.post(
-      Uri.parse('$_baseUrl/inventory/'),
-      headers: await _headers(),
-      body: jsonEncode({
-        'product_name': productName,
-        'brand': brand,
-        'quantity': quantity,
-        'unit': unit,
-        'stock_quantity': stockQuantity,
-        'price_per_unit': pricePerUnit ?? 0.0,
-      }),
-    );
 
-    print('📦 ADD INVENTORY STATUS: ${response.statusCode}');
-    print('📦 ADD INVENTORY BODY: ${response.body}');
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      return InventoryItem.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception("Failed to add inventory");
-    }
-  }
-
-  static Future<List<InventoryItem>> fetchInventoryList() async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/inventory/list'),
-      headers: await _headers(),
-    );
-
-    print('📦 FETCH INVENTORY STATUS: ${response.statusCode}');
-    print('📦 FETCH INVENTORY BODY: ${response.body}');
-
-    if (response.statusCode == 200) {
-      return (jsonDecode(response.body) as List)
-          .map((e) => InventoryItem.fromJson(e))
-          .toList();
-    } else {
-      throw Exception("Failed to fetch inventory list");
-    }
-  }
-
-  static Future<InventoryItem> updateInventory(String inventoryId,
+  static Future<InventoryItem> addInventory(
       String productName,
       String brand,
       double? quantity,
       String unit,
-      int stockQuantity,
-      {double? pricePerUnit}) async {
-    final response = await http.put(
-      Uri.parse('$_baseUrl/inventory/$inventoryId'),
-      headers: await _headers(),
-      body: jsonEncode({
-        'product_name': productName,
-        'brand': brand,
-        'quantity': quantity,
-        'unit': unit,
-        'stock_quantity': stockQuantity,
-        'price_per_unit': pricePerUnit ?? 0.0,
-      }),
-    );
+      int stockQuantity, {
+        double? pricePerUnit,
+      }) async {
+    try {
+      final response = await DioClient.dio.post(
+        '/inventory/',
+        data: {
+          'product_name': productName,
+          'brand': brand,
+          'quantity': quantity,
+          'unit': unit,
+          'stock_quantity': stockQuantity,
+          'price_per_unit': pricePerUnit ?? 0.0,
+        },
+      );
 
-    print('📦 UPDATE INVENTORY STATUS: ${response.statusCode}');
-    print('📦 UPDATE INVENTORY BODY: ${response.body}');
-
-    if (response.statusCode == 200) {
-      return InventoryItem.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception("Failed to update inventory");
+      return InventoryItem.fromJson(
+        Map<String, dynamic>.from(response.data),
+      );
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to add inventory',
+      );
     }
   }
 
-  static Future<void> deleteInventory(String inventoryId) async {
-    final response = await http.delete(
-      Uri.parse('$_baseUrl/inventory/$inventoryId'),
-      headers: await _headers(),
-    );
+  static Future<List<InventoryItem>> fetchInventoryList() async {
+    try {
+      final response = await DioClient.dio.get(
+        '/inventory/list',
+      );
 
-    print('📦 DELETE INVENTORY STATUS: ${response.statusCode}');
-    print('📦 DELETE INVENTORY BODY: ${response.body}');
+      return (response.data as List)
+          .map(
+            (e) => InventoryItem.fromJson(
+          Map<String, dynamic>.from(e),
+        ),
+      )
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to fetch inventory',
+      );
+    }
+  }
 
-    if (response.statusCode != 200) {
-      throw Exception("Failed to delete inventory item");
+  static Future<InventoryItem> updateInventory(
+      String inventoryId,
+      String productName,
+      String brand,
+      double? quantity,
+      String unit,
+      int stockQuantity, {
+        double? pricePerUnit,
+      }) async {
+    try {
+      final response = await DioClient.dio.put(
+        '/inventory/$inventoryId',
+        data: {
+          'product_name': productName,
+          'brand': brand,
+          'quantity': quantity,
+          'unit': unit,
+          'stock_quantity': stockQuantity,
+          'price_per_unit': pricePerUnit ?? 0.0,
+        },
+      );
+
+      return InventoryItem.fromJson(
+        Map<String, dynamic>.from(response.data),
+      );
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to update inventory',
+      );
+    }
+  }
+
+  static Future<void> deleteInventory(
+      String inventoryId,
+      ) async {
+    try {
+      await DioClient.dio.delete(
+        '/inventory/$inventoryId',
+      );
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Failed to delete inventory item',
+      );
     }
   }
 
@@ -578,76 +654,100 @@ class ApiService {
   // CHAT
   // ======================
 
-
-  static Future<Map<String, dynamic>?> sendGuestChat({required String message, String lang = "en",}) async {
+  static Future<Map<String, dynamic>?> sendGuestChat({
+    required String message,
+    String lang = 'en',
+  }) async {
     try {
-      final response = await http.post(
-        Uri.parse('$_baseUrl/chat/guest'),
-        headers: {
-          "Accept-Language": lang,
-          "Content-Type": "application/x-www-form-urlencoded",
+      final response = await DioClient.dio.post(
+        '/chat/guest',
+        data: {
+          'query': message,
         },
-        body: {
-          "query": message,
-        },
+        options: Options(
+          contentType: Headers.formUrlEncodedContentType,
+          headers: {
+            'Accept-Language': lang,
+          },
+        ),
       );
 
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        print("API Error: ${response.statusCode}");
-        return null;
+      if (response.data is Map) {
+        return Map<String, dynamic>.from(response.data);
       }
-    } catch (e) {
-      print("Exception: $e");
+
+      return null;
+    } on DioException catch (e) {
       return null;
     }
   }
+
   static Future<Map<String, dynamic>?> sendBusinessChat({
     required String message,
     required String lang,
   }) async {
-    final response = await http.post(
-      Uri.parse("$_baseUrl/chat/business"),
-      headers: {
-        ...(await _headers()),
-        "Accept-Language": lang,
-      },
-      body: {
-        "query": message,
-        "lang": lang,
-      },
-    );
+    try {
+      final response = await DioClient.dio.post(
+        '/chat/business',
+        data: {
+          'query': message,
+          'lang': lang,
+        },
+        options: Options(
+          contentType: Headers.formUrlEncodedContentType,
+          headers: {
+            'Accept-Language': lang,
+          },
+        ),
+      );
 
-    return jsonDecode(response.body);
+      if (response.data is Map) {
+        return Map<String, dynamic>.from(response.data);
+      }
+
+      return null;
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Business chat failed',
+      );
+    }
   }
 
   static Future<List<Map<String, dynamic>>> getChatHistory() async {
-    final uri = Uri.parse('$_baseUrl/chat/get-history');
-    final headers = await _headers();
+    try {
+      final response = await DioClient.dio.get(
+        '/chat/get-history',
+      );
 
-    final response = await http.get(uri, headers: headers);
+      final data = Map<String, dynamic>.from(response.data);
 
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return List<Map<String, dynamic>>.from(data["history"] ?? []);
+      return List<Map<String, dynamic>>.from(
+        data['history'] ?? [],
+      );
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Fetch chat history failed',
+      );
     }
-
-    throw Exception("Fetch chat history failed: ${response.body}");
   }
 
   static Future<bool> deleteChatHistory() async {
-    final uri = Uri.parse('$_baseUrl/chat/delete-history');
-    final headers = await _headers();
+    try {
+      await DioClient.dio.delete(
+        '/chat/delete-history',
+      );
 
-    final response = await http.delete(uri, headers: headers);
-
-    if (response.statusCode == 200) {
       return true;
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data?['detail'] ??
+            e.message ??
+            'Delete chat history failed',
+      );
     }
-
-    throw Exception("Delete chat history failed: ${response.body}");
-
   }
 }
-
