@@ -975,11 +975,7 @@
 
     "capture_photo": "Capture Photo",
     "select_file": "Select File",
-    "close": "Close",
-
-    "photo_uploaded": "Photo uploaded successfully",
-    "file_uploaded": "File uploaded successfully",
-    "upload_failed": "Upload failed. Please try again."
+    "close": "Close"
   },
 
   "weekly": {
@@ -1010,6 +1006,10 @@
     "days": "Days Left",
     "profit": "Profit",
     "no_stock": "No Stock Available"
-  }
+  },
+  "document_processed":  "Document processed",
+  "please_wait": "Please wait",
+  "extracting_and_analyzing_your_document...": "Extracting and analyzing your document...",
+  "scanning_document": "Scanning document"
 
 }

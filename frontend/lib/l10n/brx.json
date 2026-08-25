@@ -920,10 +920,7 @@
     "add_expense": "खर्च आरो",
     "capture_photo": "फोटो खिच",
     "select_file": "फाइल चयन कर",
-    "close": "बन्द कर",
-    "photo_uploaded": "फोटो सफलतासँ अपलोड भेल",
-    "file_uploaded": "फाइल सफलतासँ अपलोड भेल",
-    "upload_failed": "अपलोड असफल। कृपया पुनः प्रयास कर।"
+    "close": "बन्द कर"
   },
   "weekly": {
     "title": "साप्ताहिक",
@@ -953,5 +950,9 @@
     "days": "दिन",
     "profit": "लाभ",
     "no_stock": "स्टक नाइ"
-  }
+  },
+  "document_processed": "दस्ताबेज प्रसेस खालामजानाय",
+  "please_wait": "अननानै थां",
+  "extracting_and_analyzing_your_document...": "नोंनि दस्ताबेज निफ्राय फोरमायथि लाबोनाय आरो बेखेवथाय खालामनाय जादों...",
+  "scanning_document": "दस्ताबेज स्केन खालामनाय जादों"
 }

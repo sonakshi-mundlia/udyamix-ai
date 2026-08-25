@@ -509,9 +509,14 @@ class ApiService {
 
   static Future<OCRResultModel> uploadDocumentOCR({
     required File file,
-    String lang = 'en',
   }) async {
     try {
+      print("========== OCR API START ==========");
+
+      print("1. File path: ${file.path}");
+      print("2. File exists: ${await file.exists()}");
+      print("3. File name: ${file.path.split('/').last}");
+
       final formData = FormData.fromMap({
         'file': await MultipartFile.fromFile(
           file.path,
@@ -519,25 +524,22 @@ class ApiService {
         ),
       });
 
+      print("4. FormData created successfully");
+      print("5. Sending POST /ocr/upload...");
+
       final response = await DioClient.dio.post(
         '/ocr/upload',
         data: formData,
-        options: Options(
-          headers: {
-            'Accept-Language': lang,
-          },
-        ),
       );
 
-      return OCRResultModel.fromJson(
-        Map<String, dynamic>.from(response.data),
-      );
-    } on DioException catch (e) {
-      throw Exception(
-        e.response?.data?['detail'] ??
-            e.message ??
-            'OCR upload failed',
-      );
+
+      final data = Map<String, dynamic>.from(response.data);
+
+      final result = OCRResultModel.fromJson(data);
+
+      return result;
+    } catch (e) {
+      rethrow;
     }
   }
 

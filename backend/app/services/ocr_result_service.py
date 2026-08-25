@@ -4,27 +4,20 @@ import logging
 from datetime import datetime, date
 from dateutil.parser import parse
 from pathlib import Path
-
 from fastapi import HTTPException
 from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
-
-# OCR
-import pytesseract
 from pdf2image import convert_from_path
 from PIL import Image
-
-# Gemini
+import easyocr
 from google import genai
 
-# Models & services
 from ..models.ocr_result_model import OCRResult
 from ..models.business_model import Business
 from ..services.sales_service import create_sale
 from ..services.expense_service import create_expense
 from ..services.profit_service import calculate_and_store_profit
 from ..services.cash_flow_service import calculate_cashflow
-
 from ..schemas.sales_schema import SaleCreate
 from ..schemas.expense_schema import ExpenseCreate
 from ..schemas.ocr_result_schema import OCRResponse
@@ -44,12 +37,13 @@ if not GEMINI_KEY:
     raise RuntimeError("GEMINI_API_KEY is missing")
 
 client = genai.Client(api_key=GEMINI_KEY)
-MODEL_NAME = "gemini-1.5-flash"
+MODEL_NAME = "gemini-3.6-flash"
 
 
 # ----------------------------
 # OCR Extraction
 # ----------------------------
+reader = easyocr.Reader(["en"])
 async def extract_text_from_file(file_path: str) -> str:
     text = ""
     ext = Path(file_path).suffix.lower()
@@ -57,22 +51,43 @@ async def extract_text_from_file(file_path: str) -> str:
     try:
         if ext == ".pdf":
             pages = convert_from_path(file_path)
+
             for page in pages:
-                text += pytesseract.image_to_string(page)
+                results = reader.readtext(page)
+
+                page_text = "\n".join(
+                    result[1]
+                    for result in results
+                )
+
+                text += page_text + "\n"
 
         elif ext in (".png", ".jpg", ".jpeg"):
-            image = Image.open(file_path)
-            text = pytesseract.image_to_string(image)
+            results = reader.readtext(file_path)
+
+            text = "\n".join(
+                result[1]
+                for result in results
+            )
 
         else:
-            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+            with open(
+                    file_path,
+                    "r",
+                    encoding="utf-8",
+                    errors="ignore"
+            ) as f:
                 text = f.read()
 
     except Exception as e:
         logger.error(f"OCR extraction failed: {e}")
-        raise HTTPException(status_code=500, detail="Failed to extract text")
 
-    return text
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to extract text"
+        )
+
+    return text.strip()
 
 
 # ----------------------------
@@ -82,8 +97,7 @@ async def process_document_ai(
         db: Session,
         business: Business,
         document_id: int,
-        file_path: str,
-        lang: str = "en"
+        file_path: str
 ) -> OCRResponse:
 
     # ----------------------------
@@ -97,18 +111,16 @@ async def process_document_ai(
     prompt = f"""
 You are a financial AI assistant.
 
-IMPORTANT:
-- The user language is: {lang}
-- Return ALL TEXT VALUES in the SAME language ({lang})
-- DO NOT translate keys
-- Return ONLY valid JSON (no explanation, no markdown)
+Extract structured financial data from the document.
 
-Extract structured JSON from the document.
+Return ONLY valid JSON.
+Do not add explanations or markdown.
+Do not translate the extracted information.
 
 TEXT:
 {text_content[:5000]}
 
-Return ONLY valid JSON:
+Return ONLY:
 
 {{
   "type": "sale" | "expense",
@@ -117,7 +129,6 @@ Return ONLY valid JSON:
   "category": string,
   "date": "YYYY-MM-DD",
   "confidence": float,
-  "description": string,
   "raw_text": string
 }}
 """
@@ -145,7 +156,6 @@ Return ONLY valid JSON:
             "category": "Unknown",
             "date": str(datetime.utcnow().date()),
             "confidence": 0.5,
-            "description": "Fallback AI output",
             "raw_text": text_content
         }
 
@@ -169,9 +179,7 @@ Return ONLY valid JSON:
         detected_category=ai_output.get("category"),
         detected_date=detected_date,
         raw_text=ai_output.get("raw_text", text_content),
-        confidence=ai_output.get("confidence", 0.5),
-        description=ai_output.get("description"),
-        language=lang
+        confidence=ai_output.get("confidence", 0.5)
     )
 
     db.add(ocr)
@@ -187,26 +195,25 @@ Return ONLY valid JSON:
             if ai_output["type"] == "sale":
                 create_sale(
                     db,
-                    business.id,
+                    business,
                     SaleCreate(
                         amount=ai_output["amount"],
                         customer_name=ai_output.get("party"),
                         category=ai_output.get("category"),
-                        description=ocr.description,
                         sale_date=detected_date,
                         is_paid=True
                     )
                 )
 
             elif ai_output["type"] == "expense":
+
                 create_expense(
                     db,
-                    business.id,
+                    business,
                     ExpenseCreate(
                         amount=ai_output["amount"],
                         vendor_name=ai_output.get("party"),
                         category=ai_output.get("category"),
-                        description=ocr.description,
                         expense_date=detected_date,
                         is_paid=True
                     )
@@ -217,7 +224,8 @@ Return ONLY valid JSON:
             calculate_cashflow(db, business.id)
 
         except Exception as e:
-            logger.error(f"Auto creation failed: {e}")
+            print("Error type:", type(e).__name__)
+
 
     # ----------------------------
     # Step 7: Response

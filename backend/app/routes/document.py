@@ -23,15 +23,13 @@ router = APIRouter(prefix="/documents", tags=["Documents"])
 async def upload_document(
         file: UploadFile = File(...),
         db: Session = Depends(get_db),
-        business: Business = Depends(get_current_business),
-        lang: str = Depends(get_current_language)  # ✅ user language
+        business: Business = Depends(get_current_business)
 ):
     try:
         return await save_file(
             db=db,
             file=file,
-            business=business,
-            lang=lang  # ✅ pass language
+            business=business
         )
     except Exception as e:
         raise HTTPException(
@@ -46,13 +44,11 @@ async def upload_document(
 @router.get("/", response_model=list[DocumentResponse])
 def list_documents(
         db: Session = Depends(get_db),
-        business: Business = Depends(get_current_business),
-        lang: str = Depends(get_current_language)  # ✅ target language
+        business: Business = Depends(get_current_business)
 ):
     return get_documents(
         db=db,
-        business=business,
-        lang=lang  # ✅ important
+        business=business
     )
 
 
@@ -99,7 +95,7 @@ def remove_document(
 
     delete_document(
         db=db,
-        document_id=document.id,   # ✅ FIXED
+        document_id=document.id,
         business=business
     )
 

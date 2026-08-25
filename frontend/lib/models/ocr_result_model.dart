@@ -1,53 +1,46 @@
-// lib/models/ocr_result_model.dart
-
 class OCRResultModel {
-  final String ocrId;
-  final String detectedType; // sale or expense
-  final double amount;
-  final String? party; // customer/vendor
-  final String? category;
-  final String description;
-  final String date; // YYYY-MM-DD
+  final int id;
+  final int documentId;
+  final String? detectedType;
+  final double detectedAmount;
+  final String? detectedParty;
+  final String? detectedCategory;
+  final DateTime? detectedDate;
   final double confidence;
-  final String language;
+  final DateTime? createdAt;
 
   OCRResultModel({
-    required this.ocrId,
+    required this.id,
+    required this.documentId,
     required this.detectedType,
-    required this.amount,
-    this.party,
-    this.category,
-    required this.description,
-    required this.date,
+    required this.detectedAmount,
+    required this.detectedParty,
+    required this.detectedCategory,
+    required this.detectedDate,
     required this.confidence,
-    required this.language,
+    required this.createdAt,
   });
 
   factory OCRResultModel.fromJson(Map<String, dynamic> json) {
-    return OCRResultModel(
-      ocrId: json['ocr_id'].toString(),
-      detectedType: json['detected_type'],
-      amount: (json['amount'] as num).toDouble(),
-      party: json['party'],
-      category: json['category'],
-      description: json['description'],
-      date: json['date'],
-      confidence: (json['confidence'] as num).toDouble(),
-      language: json['language'],
-    );
-  }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'ocr_id': ocrId,
-      'detected_type': detectedType,
-      'amount': amount,
-      'party': party,
-      'category': category,
-      'description': description,
-      'date': date,
-      'confidence': confidence,
-      'language': language,
-    };
+    final ocr = Map<String, dynamic>.from(
+      json['ocr_result'] ?? {},
+    );
+
+    return OCRResultModel(
+      id: ocr['id'],
+      documentId: ocr['document_id'],
+      detectedType: ocr['detected_type'],
+      detectedAmount: (ocr['detected_amount'] as num?)?.toDouble() ?? 0.0,
+      detectedParty: ocr['detected_party'],
+      detectedCategory: ocr['detected_category'],
+      detectedDate: ocr['detected_date'] != null
+          ? DateTime.tryParse(ocr['detected_date'].toString())
+          : null,
+      confidence: (ocr['confidence'] as num?)?.toDouble() ?? 0.0,
+      createdAt: ocr['created_at'] != null
+          ? DateTime.tryParse(ocr['created_at'].toString())
+          : null,
+    );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
@@ -9,6 +10,7 @@ import '../providers/dashboard_provider.dart';
 import '../services/api_service.dart';
 import '../screens/add_sale_screen.dart';
 import '../screens/add_expense_screen.dart';
+import '../models/ocr_result_model.dart';
 
 class QuickActionsWidget extends StatefulWidget {
   const QuickActionsWidget({super.key});
@@ -23,170 +25,556 @@ class _QuickActionsWidgetState extends State<QuickActionsWidget> {
 
   bool isLoading = false;
 
-  Future<void> capturePhoto() async {
-    final t = context.read<LanguageProvider>().translate;
+  OCRResultModel? ocrResult;
 
+  // ============================================================
+  // CAMERA
+  // ============================================================
+
+  Future<void> capturePhoto() async {
     try {
       final picker = ImagePicker();
-      final image = await picker.pickImage(source: ImageSource.camera);
+
+      final image = await picker.pickImage(
+        source: ImageSource.camera,
+      );
 
       if (image == null) return;
 
+      final file = File(image.path);
+
       setState(() {
-        photoFile = File(image.path);
-        isLoading = true;
+        photoFile = file;
       });
 
-      await ApiService.uploadDocumentOCR(file: photoFile!);
+      // Close upload dialog first
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
 
+      await processOCR(file);
+    } catch (e) {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(t('quick_actions.photo_uploaded'))),
+        SnackBar(
+          content: Text('Upload failed: $e'),
+        ),
       );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(t('quick_actions.upload_failed'))),
-      );
-    } finally {
-      if (mounted) setState(() => isLoading = false);
     }
   }
 
-  Future<void> pickFile() async {
-    final t = context.read<LanguageProvider>().translate;
+  // ============================================================
+  // FILE PICKER
+  // ============================================================
 
+  Future<void> pickFile() async {
     try {
-      final result = await FilePicker.platform.pickFiles();
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: [
+          'pdf',
+          'jpg',
+          'jpeg',
+          'png',
+        ],
+      );
 
       if (result == null) return;
 
+      final path = result.files.single.path;
+
+      if (path == null) return;
+
+      final file = File(path);
+
       setState(() {
-        documentFile = File(result.files.single.path!);
-        isLoading = true;
+        documentFile = file;
       });
 
-      await ApiService.uploadDocumentOCR(file: documentFile!);
+      // Close upload dialog
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+
+      await processOCR(file);
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Upload failed: $e'),
+        ),
+      );
+    }
+  }
+
+  // ============================================================
+  // OCR PROCESS
+  // ============================================================
+
+  Future<void> processOCR(File file) async {
+    if (!mounted) return;
+
+    setState(() {
+      isLoading = true;
+      ocrResult = null;
+    });
+
+    try {
+      final result = await ApiService.uploadDocumentOCR(
+        file: file,
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        ocrResult = result;
+        isLoading = false;
+      });
 
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(t('quick_actions.file_uploaded'))),
+        const SnackBar(
+          content: Text('Document processed successfully'),
+        ),
       );
     } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        isLoading = false;
+      });
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(t('quick_actions.upload_failed'))),
+        SnackBar(
+          content: Text('OCR processing failed: $e'),
+        ),
       );
-    } finally {
-      if (mounted) setState(() => isLoading = false);
     }
   }
 
-  void openPhotoContainer() => _openDialog(
-    icon: Icons.camera_alt,
-    titleKey: "quick_actions.capture_photo",
-    onPressed: capturePhoto,
-    file: photoFile,
-    isImage: true,
-  );
+  // ============================================================
+  // PHOTO DIALOG
+  // ============================================================
 
-  void openFileContainer() => _openDialog(
-    icon: Icons.upload_file,
-    titleKey: "quick_actions.select_file",
-    onPressed: pickFile,
-    file: documentFile,
-    isImage: false,
-  );
+  void openPhotoContainer() {
+    final t = context.watch<LanguageProvider>().translate;
+    _openDialog(
+      icon: Icons.camera_alt,
+      title: t('quick_actions.capture_photo'),
+      onPressed: capturePhoto,
+      file: photoFile,
+      isImage: true,
+    );
+  }
+
+  // ============================================================
+  // FILE DIALOG
+  // ============================================================
+
+  void openFileContainer() {
+    final t = context.watch<LanguageProvider>().translate;
+    _openDialog(
+      icon: Icons.upload_file,
+      title: t('quick_actions.select_file'),
+      onPressed: pickFile,
+      file: documentFile,
+      isImage: false,
+    );
+  }
+
+  // ============================================================
+  // UPLOAD DIALOG
+  // ============================================================
 
   void _openDialog({
     required IconData icon,
-    required String titleKey,
+    required String title,
     required VoidCallback onPressed,
     File? file,
     required bool isImage,
   }) {
-    final t = context.read<LanguageProvider>().translate;
-
+    final t = context.watch<LanguageProvider>().translate;
     showDialog(
       context: context,
-      builder: (_) => Dialog(
-        insetPadding: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (file != null)
-                isImage
-                    ? Image.file(file, height: 120)
-                    : Column(
-                  children: [
-                    const Icon(Icons.insert_drive_file, size: 60),
-                    const SizedBox(height: 8),
-                    Text(file.path.split('/').last),
-                  ],
-                )
-              else
-                Icon(icon, size: 60, color: Colors.blue),
+      builder: (dialogContext) {
+        return Dialog(
+          insetPadding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width < 600 ? 200 : 400,
+            vertical: 50,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
 
-              const SizedBox(height: 16),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
 
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+
+              children: [
+
+                // ------------------------------------------------
+                // ICON / FILE PREVIEW
+                // ------------------------------------------------
+
+                if (file != null)
+                  isImage
+                      ? ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.file(
+                      file,
+                      height: 120,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                      : Column(
+                    children: [
+                      const Icon(
+                        Icons.insert_drive_file,
+                        size: 60,
+                        color: Colors.blue,
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      Text(
+                        file.path.split(Platform.pathSeparator).last,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  )
+                else
+                  Icon(
+                    icon,
+                    size: 60,
+                    color: Colors.blue,
+                  ),
+
+                const SizedBox(height: 20),
+
+                // ------------------------------------------------
+                // BLUE BUTTON
+                // ------------------------------------------------
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: onPressed,
+
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+
+                      elevation: 2,
+
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 14,
+                      ),
+
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+
+                    icon: Icon(
+                      icon,
+                      color: Colors.white,
+                    ),
+
+                    label: Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
-                onPressed: isLoading ? null : onPressed,
-                icon: Icon(icon),
-                label: Text(t(titleKey)),
+
+                const SizedBox(height: 8),
+
+                // ------------------------------------------------
+                // CLOSE
+                // ------------------------------------------------
+
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                  },
+
+                  child: Text(
+                    t('quick_actions.close'),
+                    style: TextStyle(
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // OCR RESULT CONTAINER
+  // ============================================================
+
+  Widget _buildOCRResult() {
+    if (ocrResult == null) {
+      return const SizedBox.shrink();
+    }
+
+    final result = ocrResult!;
+
+    return Container(
+      width: double.infinity,
+
+      margin: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 8,
+      ),
+
+      padding: const EdgeInsets.all(20),
+
+      decoration: BoxDecoration(
+        color: Colors.white,
+
+        borderRadius: BorderRadius.circular(16),
+
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+
+        children: [
+
+          // ------------------------------------------------------
+          // HEADER
+          // ------------------------------------------------------
+
+          Row(
+            children: [
+
+              const Icon(
+                Icons.document_scanner,
+                color: Colors.blue,
               ),
 
-              const SizedBox(height: 8),
+              const SizedBox(width: 10),
 
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(t('quick_actions.close')),
+              const Expanded(
+                child: Text(
+                  'OCR Result',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
 
-              if (isLoading) ...[
-                const SizedBox(height: 12),
-                const CircularProgressIndicator(),
-              ]
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    ocrResult = null;
+                  });
+                },
+
+                icon: const Icon(
+                  Icons.close,
+                ),
+              ),
             ],
           ),
-        ),
+
+          const Divider(),
+
+          const SizedBox(height: 10),
+
+          _resultRow(
+            'Type',
+             result.detectedType ?? 'Unknown'
+          ),
+
+          _resultRow(
+            'Amount',
+            '₹${result.detectedAmount.toStringAsFixed(2)}',
+          ),
+
+          _resultRow(
+            'Party',
+            result.detectedParty ?? 'Not detected',
+          ),
+
+          _resultRow(
+            'Category',
+            result.detectedCategory ?? 'Not detected',
+          ),
+
+          _resultRow(
+            'Date',
+            result.detectedDate?.toString() ?? 'Unknown',
+          ),
+
+          _resultRow(
+            'Confidence',
+            '${(result.confidence * 100).toStringAsFixed(0)}%',
+          ),
+        ],
       ),
     );
   }
 
+  Widget _resultRow(
+      String label,
+      String value,
+      ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 7,
+      ),
+
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+
+        children: [
+
+          SizedBox(
+            width: 100,
+
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+
+          Expanded(
+            child: Text(
+              value,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // LOADING SCANNER
+  // ============================================================
+
+  Widget _buildLoadingScanner() {
+    if (!isLoading) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      width: double.infinity,
+
+      margin: const EdgeInsets.all(16),
+
+      padding: const EdgeInsets.all(24),
+
+      decoration: BoxDecoration(
+        color: Colors.white,
+
+        borderRadius: BorderRadius.circular(16),
+
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+
+      child: const Column(
+        children: [
+
+          SizedBox(
+            width: 45,
+            height: 45,
+
+            child: CircularProgressIndicator(
+              strokeWidth: 4,
+            ),
+          ),
+
+          SizedBox(height: 18),
+
+          Text(
+            'Scanning document...',
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          SizedBox(height: 8),
+
+          Text(
+            'Extracting and processing your data',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
+
   @override
   Widget build(BuildContext context) {
-    final t = context.watch<LanguageProvider>().translate;
     final width = MediaQuery.of(context).size.width;
 
     final crossAxisCount = width < 600 ? 2 : 4;
+
     final padding = width < 600 ? 16.0 : 24.0;
+
     final containerHeight = width < 600 ? 50.0 : 90.0;
+
     final containerWidth = width < 600 ? 100.0 : 140.0;
+
+    final t = context.watch<LanguageProvider>().translate;
 
     final actions = [
       {
         "icon": Icons.camera_alt,
         "label": t('quick_actions.upload_photo'),
-        "action": openPhotoContainer
+        "action": openPhotoContainer,
       },
+
       {
         "icon": Icons.upload_file,
         "label": t('quick_actions.upload_file'),
-        "action": openFileContainer
+        "action": openFileContainer,
       },
+
       {
         "icon": Icons.shopping_cart,
         "label": t('quick_actions.add_sale'),
         "action": () async {
-
           await Navigator.push(
             context,
             MaterialPageRoute(
@@ -197,13 +585,13 @@ class _QuickActionsWidgetState extends State<QuickActionsWidget> {
           if (context.mounted) {
             context.read<DashboardProvider>().refresh();
           }
-        }
+        },
       },
+
       {
         "icon": Icons.money,
         "label": t('quick_actions.add_expense'),
         "action": () async {
-
           await Navigator.push(
             context,
             MaterialPageRoute(
@@ -214,63 +602,123 @@ class _QuickActionsWidgetState extends State<QuickActionsWidget> {
           if (context.mounted) {
             context.read<DashboardProvider>().refresh();
           }
-        }
+        },
       },
     ];
 
-    return Padding(
-      padding: EdgeInsets.all(padding),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: actions.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount,
-          crossAxisSpacing: padding,
-          mainAxisSpacing: padding,
-          childAspectRatio: containerWidth / containerHeight,
-        ),
-        itemBuilder: (context, index) {
-          final action = actions[index];
+    return Column(
+      children: [
 
-          return InkWell(
-            onTap: action["action"] as VoidCallback,
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              height: containerHeight,
-              width: containerWidth,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 6,
-                    color: Colors.black.withOpacity(0.08),
-                    offset: const Offset(2, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(action["icon"] as IconData,
-                      size: width < 600 ? 26 : 32,
-                      color: Colors.blue),
-                  const SizedBox(height: 8),
-                  Text(
-                    action["label"] as String,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: width < 600 ? 12 : 14,
-                    ),
-                  ),
-                ],
-              ),
+        // ======================================================
+        // LOADING
+        // ======================================================
+
+        _buildLoadingScanner(),
+
+        // ======================================================
+        // OCR RESULT
+        // ======================================================
+
+        _buildOCRResult(),
+
+        // ======================================================
+        // QUICK ACTIONS
+        // ======================================================
+
+        Padding(
+          padding: EdgeInsets.all(padding),
+
+          child: GridView.builder(
+            shrinkWrap: true,
+
+            physics: const NeverScrollableScrollPhysics(),
+
+            itemCount: actions.length,
+
+            gridDelegate:
+            SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+
+              crossAxisSpacing: padding,
+
+              mainAxisSpacing: padding,
+
+              childAspectRatio:
+              containerWidth / containerHeight,
             ),
-          );
-        },
-      ),
+
+            itemBuilder: (context, index) {
+              final action = actions[index];
+
+              return InkWell(
+                onTap: isLoading
+                    ? null
+                    : action["action"] as VoidCallback,
+
+                borderRadius: BorderRadius.circular(12),
+
+                child: Container(
+                  height: containerHeight,
+
+                  width: containerWidth,
+
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+
+                    borderRadius:
+                    BorderRadius.circular(12),
+
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 6,
+
+                        color:
+                        Colors.black.withOpacity(0.08),
+
+                        offset: const Offset(2, 2),
+                      ),
+                    ],
+                  ),
+
+                  child: Column(
+                    mainAxisAlignment:
+                    MainAxisAlignment.center,
+
+                    children: [
+
+                      Icon(
+                        action["icon"] as IconData,
+
+                        size:
+                        width < 600 ? 26 : 32,
+
+                        color: Colors.blue,
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      Text(
+                        action["label"] as String,
+
+                        textAlign: TextAlign.center,
+
+                        style: TextStyle(
+                          fontWeight:
+                          FontWeight.bold,
+
+                          fontSize:
+                          width < 600 ? 12 : 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
+

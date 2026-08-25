@@ -3,6 +3,7 @@
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
+from pathlib import Path
 
 from ..models.business_model import Business
 from ..utils.auth_dependency import get_current_business, get_current_language
@@ -18,7 +19,7 @@ async def upload_and_process_document(
         file: UploadFile = File(...),
         db: Session = Depends(get_db),
         business: Business = Depends(get_current_business),
-        lang: str = Depends(get_current_language)  # ✅ language injected
+        lang: str = Depends(get_current_language)
 ):
     """
     Upload document → OCR → AI → multilingual response
@@ -28,38 +29,59 @@ async def upload_and_process_document(
         raise HTTPException(status_code=400, detail="No file uploaded")
 
     try:
-        # ----------------------------
         # Step 1: Save file
-        # ----------------------------
-        document: Document = await save_file(db, file, business.id)
+        print("STEP 1: Saving file...")
+        print("Filename:", file.filename)
+        print("Content type:", file.content_type)
 
-        if not document:
-            raise HTTPException(status_code=500, detail="Failed to save document")
-
-        # ----------------------------
-        # Step 2: Process OCR + AI
-        # ----------------------------
-        ocr_result = await process_document_ai(
-            db=db,
-            business=business,   # ✅ FIXED
-            document_id=document.id,            # ✅ FIXED
-            file_path=document.file_path,
-            lang=lang                           # ✅ LANGUAGE FLOW
+        document: Document = await save_file(
+            db,
+            file,
+            business
         )
 
-        # ----------------------------
-        # Step 3: Response
-        # ----------------------------
+        print("Document saved:", document)
+
+        if not document:
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to save document"
+            )
+
+        # Step 2: OCR + AI
+        print("STEP 2: Starting OCR + AI...")
+        print("Document ID:", document.id)
+        print("File path:", document.file_path)
+        print("Language:", lang)
+
+        ocr_result = await process_document_ai(
+            db=db,
+            business=business,
+            document_id=document.id,
+            file_path=document.file_path
+        )
+
+        print("STEP 3: OCR + AI completed")
+        print("OCR result:", ocr_result)
+
         return {
             "success": True,
             "document_id": document.id,
-            "filename": document.file_name,
-            "language": lang,  # ✅ include for frontend
+            "filename": Path(document.file_path).name,
             "ocr_result": ocr_result
         }
 
     except Exception as e:
+        import traceback
+
+        print("========== OCR ERROR ==========")
+        print("Error type:", type(e).__name__)
+        print("Error:", str(e))
+        traceback.print_exc()
+        print("================================")
+
         raise HTTPException(
             status_code=500,
             detail=f"OCR processing failed: {str(e)}"
         )
+

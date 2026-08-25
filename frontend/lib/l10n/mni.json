@@ -929,10 +929,7 @@
     "add_expense": "ꯀ꯭ꯔꯦꯛ ꯖꯣꯔꯕꯥ",
     "capture_photo": "ꯐꯣꯇꯣ ꯃꯦꯔꯟ",
     "select_file": "ꯐ꯭ꯔꯤ ꯑꯃꯦꯔꯟ",
-    "close": "ꯀꯣꯂꯣ",
-    "photo_uploaded": "ꯐꯣꯇꯣ ꯁꯦꯏꯁꯤ ꯑꯄꯦꯅ",
-    "file_uploaded": "ꯐ꯭ꯔꯤ ꯁꯦꯏꯁꯤ ꯑꯄꯦꯅ",
-    "upload_failed": "ꯑꯄꯦꯅ ꯀꯣꯔꯦ. ꯂꯥꯌꯂꯥꯟꯕꯤꯡ ꯃꯤ ꯀ꯭ꯔꯦ"
+    "close": "ꯀꯣꯂꯣ"
   },
   "weekly": {
     "title": "ꯍꯥꯛꯇꯦ ꯏꯌꯦꯜ",
@@ -962,5 +959,9 @@
     "days": "নুমি লৈরে",
     "profit": "লাভ",
     "no_stock": "ষ্টক লৈতে"
-  }
+  },
+  "document_processed": "ꯗꯣꯀ꯭ꯌꯨꯃꯦꯟꯇ ꯄ꯭ꯔꯣꯁꯦꯁ ꯇꯧꯔꯦ",
+  "please_wait": "ꯃꯔꯨꯑꯣꯏꯅ ꯇꯥꯏꯕꯗꯨ ꯂꯥꯛꯄꯤꯌꯨ",
+  "extracting_and_analyzing_your_document...": "ꯅꯪꯒꯤ ꯗꯣꯀ꯭ꯌꯨꯃꯦꯟꯇꯇꯒꯤ ꯑꯋꯥꯡꯕ ꯀꯣꯏꯅ ꯂꯧꯕ ꯑꯃꯁꯨꯡ ꯑꯅꯥꯏꯕ ꯇꯧꯔꯤ...",
+  "scanning_document": "ꯗꯣꯀ꯭ꯌꯨꯃꯦꯟꯇ ꯁ꯭ꯀꯦꯟ ꯇꯧꯔꯤ"
 }

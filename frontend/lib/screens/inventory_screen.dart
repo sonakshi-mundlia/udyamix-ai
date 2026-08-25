@@ -27,27 +27,54 @@ class _InventoryScreenState extends State<InventoryScreen> {
     });
 
     if (widget.prefillItem != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.read<InventoryProvider>().fetchInventory();
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final provider = context.read<InventoryProvider>();
 
-        if (widget.prefillItem != null) {
-          showDialog(
-            context: context,
-            builder: (_) => InventoryWidget(
-              items: const [],
-              prefill: widget.prefillItem,
-              onAdd: context.read<InventoryProvider>().addItem,
-              onUpdate: (i, item) {
-                context.read<InventoryProvider>()
-                    .updateItem(item.id.toString(), item);
-              },
-              onDelete: (i) {
-                context.read<InventoryProvider>()
-                    .deleteItem(widget.prefillItem!.id.toString());
-              },
-            ),
-          );
-        }
+        await provider.fetchInventory();
+
+        if (!mounted) return;
+
+        showDialog(
+          context: context,
+          builder: (_) => InventoryWidget(
+            items: const [],
+            prefill: widget.prefillItem,
+
+            onAdd: (item) async {
+              await provider.addItem(item);
+              await provider.fetchInventory();
+
+              if (mounted) {
+                Navigator.of(context).pop();
+              }
+            },
+
+            onUpdate: (i, item) async {
+              await provider.updateItem(
+                item.id.toString(),
+                item,
+              );
+
+              await provider.fetchInventory();
+
+              if (mounted) {
+                Navigator.of(context).pop();
+              }
+            },
+
+            onDelete: (i) async {
+              await provider.deleteItem(
+                widget.prefillItem!.id.toString(),
+              );
+
+              await provider.fetchInventory();
+
+              if (mounted) {
+                Navigator.of(context).pop();
+              }
+            },
+          ),
+        );
       });
     }
 
@@ -93,19 +120,26 @@ class _InventoryScreenState extends State<InventoryScreen> {
         child: RefreshIndicator(
           onRefresh: provider.fetchInventory,
           child: provider.loading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(
+            child: CircularProgressIndicator(),
+          )
               : Column(
             children: [
-              /// 🔍 SEARCH BAR
+              /// SEARCH BAR
               Padding(
                 padding: EdgeInsets.fromLTRB(
-                    horizontalPadding, 12, horizontalPadding, 8),
+                  horizontalPadding,
+                  12,
+                  horizontalPadding,
+                  8,
+                ),
                 child: TextField(
                   controller: searchController,
                   decoration: InputDecoration(
                     hintText: t("inventory.search_hint"),
                     prefixIcon: const Icon(Icons.search),
-                    suffixIcon: searchController.text.isNotEmpty
+                    suffixIcon:
+                    searchController.text.isNotEmpty
                         ? IconButton(
                       icon: const Icon(Icons.clear),
                       onPressed: () {
@@ -120,154 +154,44 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 ),
               ),
 
-              /// 📦 CONTENT
-              /// 📦 CONTENT
+              /// INVENTORY
               Expanded(
-                child: items.isEmpty
-                    ? Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (_) => InventoryWidget(
-                          items: const [],
-                          onAdd: (item) async {
-                            await provider.addItem(item);
-                            await provider.fetchInventory();
+                child: InventoryWidget(
+                  items: items,
 
-                            if (mounted) {
-                              Navigator.of(context).pop();
-                            }
-                          },
-                          onUpdate: (i, item) async {
-                            await provider.updateItem(
-                              item.id.toString(),
-                              item,
-                            );
-                            await provider.fetchInventory();
-                          },
-                          onDelete: (i) async {
-                            if (provider.items.isNotEmpty) {
-                              await provider.deleteItem(
-                                provider.items[i].id.toString(),
-                              );
-                              await provider.fetchInventory();
-                            }
-                          },
-                        ),
-                      );
-                    },
-                    child: Container(
-                      width: 70,
-                      height: 70,
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.white,
-                        size: 36,
-                      ),
-                    ),
-                  ),
-                )
-                    : Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: horizontalPadding,
-                  ),
-                  child: Column(
-                    children: [
+                  onAdd: (item) async {
+                    await provider.addItem(item);
+                    await provider.fetchInventory();
 
-                      /// ➕ ADD BUTTON
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: GestureDetector(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (_) => InventoryWidget(
-                                items: items,
-                                onAdd: (item) async {
-                                  await provider.addItem(item);
-                                  await provider.fetchInventory();
+                    if (mounted) {
+                      setState(() {});
+                    }
+                  },
 
-                                  if (mounted) {
-                                    Navigator.of(context).pop();
-                                  }
-                                },
-                                onUpdate: (i, item) async {
-                                  await provider.updateItem(
-                                    item.id.toString(),
-                                    item,
-                                  );
-                                  await provider.fetchInventory();
-                                },
-                                onDelete: (i) async {
-                                  await provider.deleteItem(
-                                    provider.items[i].id.toString(),
-                                  );
-                                  await provider.fetchInventory();
-                                },
-                              ),
-                            );
-                          },
-                          child: Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(
-                              Icons.add,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
+                  onUpdate: (i, item) async {
+                    await provider.updateItem(
+                      item.id.toString(),
+                      item,
+                    );
 
-                      const SizedBox(height: 12),
+                    await provider.fetchInventory();
 
-                      /// 📋 INVENTORY LIST
-                      Expanded(
-                        child: InventoryWidget(
-                          items: items,
-                          onAdd: (item) async {
-                            await provider.addItem(item);
-                            await provider.fetchInventory();
+                    if (mounted) {
+                      setState(() {});
+                    }
+                  },
 
-                            if (mounted) {
-                              setState(() {});
-                            }
-                          },
-                          onUpdate: (i, item) async {
-                            await provider.updateItem(
-                              item.id.toString(),
-                              item,
-                            );
+                  onDelete: (i) async {
+                    await provider.deleteItem(
+                      provider.items[i].id.toString(),
+                    );
 
-                            await provider.fetchInventory();
+                    await provider.fetchInventory();
 
-                            if (mounted) {
-                              setState(() {});
-                            }
-                          },
-                          onDelete: (i) async {
-                            await provider.deleteItem(
-                              provider.items[i].id.toString(),
-                            );
-
-                            await provider.fetchInventory();
-
-                            if (mounted) {
-                              setState(() {});
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
+                    if (mounted) {
+                      setState(() {});
+                    }
+                  },
                 ),
               ),
             ],

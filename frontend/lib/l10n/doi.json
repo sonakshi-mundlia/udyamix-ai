@@ -920,10 +920,7 @@
     "add_expense": "खर्च जोड़ें",
     "capture_photo": "फोटो लें",
     "select_file": "फाइल चुनें",
-    "close": "बंद करें",
-    "photo_uploaded": "फोटो सफलतापूर्वक अपलोड हुआ",
-    "file_uploaded": "फाइल सफलतापूर्वक अपलोड हुई",
-    "upload_failed": "अपलोड विफल। कृपया पुनः प्रयास करें।"
+    "close": "बंद करें"
   },
   "weekly": {
     "title": "साप्ताहिक",
@@ -953,5 +950,9 @@
     "days": "दिन बाकी",
     "profit": "लाभ",
     "no_stock": "कोई स्टॉक मौजूद नहीं"
-  }
+  },
+  "document_processed": "दस्तावेज़ प्रक्रिया कीता गेई",
+  "please_wait": "कृपया इंतज़ार करो",
+  "extracting_and_analyzing_your_document...": "तुमचे दस्तावेज़ थमां जानकारी कड्डी तेका समझया जा रा...",
+  "scanning_document": "दस्तावेज़ स्कैन कीता जा रा"
 }

@@ -942,10 +942,7 @@
     "add_expense": "ব্যয় যোগ কৰক",
     "capture_photo": "ফটো লওক",
     "select_file": "ফাইল বাচি লওক",
-    "close": "বন্ধ কৰক",
-    "photo_uploaded": "ফটো সফলতাৰে আপলোড হৈছে",
-    "file_uploaded": "ফাইল সফলতাৰে আপলোড হৈছে",
-    "upload_failed": "আপলোড বিফল। পুনৰ চেষ্টা কৰক।"
+    "close": "বন্ধ কৰক"
   },
   "weekly": {
     "title": "সাপ্তাহিক",
@@ -975,5 +972,9 @@
     "days": "দিন বাকী",
     "profit": "লাভ",
     "no_stock": "কোনো ষ্টক উপলব্ধ নাই"
-  }
+  },
+  "document_processed": "দস্তাবেজ প্ৰক্ৰিয়াকৰণ কৰা হৈছে",
+  "please_wait": "অনুগ্ৰহ কৰি অপেক্ষা কৰক",
+  "extracting_and_analyzing_your_document...": "আপোনাৰ দস্তাবেজৰ তথ্য আহৰণ আৰু বিশ্লেষণ কৰা হৈছে...",
+  "scanning_document": "দস্তাবেজ স্কেন কৰা হৈছে"
 }

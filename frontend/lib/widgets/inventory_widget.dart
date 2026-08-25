@@ -22,6 +22,7 @@ class InventoryWidget extends StatefulWidget {
 
   @override
   State<InventoryWidget> createState() => _InventoryWidgetState();
+
 }
 
 
@@ -219,103 +220,147 @@ class _InventoryWidgetState extends State<InventoryWidget> {
 
     return Padding(
       padding: EdgeInsets.all(padding),
-      child: Wrap(
-        spacing: padding,
-        runSpacing: padding,
-        children: [
-          /// ITEMS
-          ...widget.items.asMap().entries.map((entry) {
-            final index = entry.key;
-            final item = entry.value;
+      child: Center(
+        child: Wrap(
+          spacing: padding,
+          runSpacing: padding,
+          alignment: WrapAlignment.center,
+          children: [
+            /// INVENTORY ITEMS
+            ...widget.items.asMap().entries.map((entry) {
+              final index = entry.key;
+              final item = entry.value;
 
-            return SizedBox(
+              return SizedBox(
+                width: containerWidth,
+                child: GestureDetector(
+                  onTap: () => _showOptions(index),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: Colors.grey.shade300,
+                      ),
+                      borderRadius: BorderRadius.circular(14),
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          item.productName,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+
+                        if (item.brand != null &&
+                            item.brand!.isNotEmpty)
+                          Text(
+                            item.brand!,
+                            style: const TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+
+                        const SizedBox(height: 6),
+
+                        Text(
+                          item.quantity.toString(),
+                          style: const TextStyle(fontSize: 13),
+                        ),
+
+                        Text(
+                          item.unit,
+                          style: const TextStyle(fontSize: 13),
+                        ),
+
+                        const SizedBox(height: 6),
+
+                        Text(
+                          "₹ ${item.pricePerUnit?.toStringAsFixed(2) ?? '0.00'}",
+                        ),
+
+                        const SizedBox(height: 8),
+
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 6,
+                            horizontal: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: _getStockColor(
+                              item.stockQuantity,
+                            ).withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisAlignment:
+                            MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  color: _getStockColor(
+                                    item.stockQuantity,
+                                  ),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                _getStockText(
+                                  item.stockQuantity,
+                                ),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: _getStockColor(
+                                    item.stockQuantity,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        if (item.createdAt != null)
+                          Text(
+                            "Added: ${_formatDateTime(item.createdAt)}",
+                            style: const TextStyle(
+                              fontSize: 10,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+
+            /// ONE + BUTTON
+            SizedBox(
               width: containerWidth,
               child: GestureDetector(
-                onTap: () => _showOptions(index),
+                onTap: () => _showForm(),
                 child: Container(
-                  padding: const EdgeInsets.all(10),
+                  height: 100,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300),
+                    color: Colors.blue,
                     borderRadius: BorderRadius.circular(14),
-                    color: Colors.white,
                   ),
-                  child: Column(
-                    children: [
-                      Text(
-                        item.productName,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-
-                      if (item.brand != null && item.brand!.isNotEmpty)
-                        Text(
-                          item.brand!,
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-
-                      const SizedBox(height: 6),
-                      Text(
-                        item.quantity.toString(),
-                        style: const TextStyle(fontSize: 13),
-                      ),
-                      Text(
-                        item.unit,
-                        style: const TextStyle(fontSize: 13),
-                      ),
-
-                      const SizedBox(height: 6),
-
-                      Text(
-                        "₹ ${item.pricePerUnit?.toStringAsFixed(2) ?? '0.00'}",
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                        decoration: BoxDecoration(
-                          color: _getStockColor(item.stockQuantity).withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 10,
-                              height: 10,
-                              decoration: BoxDecoration(
-                                color: _getStockColor(item.stockQuantity),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              _getStockText(item.stockQuantity),
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: _getStockColor(item.stockQuantity),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      if (item.createdAt != null)
-                        Text(
-                          "Added: ${_formatDateTime(item.createdAt)}",
-                          style: const TextStyle(fontSize: 10),
-                        ),
-                    ],
+                  child: const Icon(
+                    Icons.add,
+                    color: Colors.white,
+                    size: 36,
                   ),
                 ),
               ),
-            );
-          }),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }

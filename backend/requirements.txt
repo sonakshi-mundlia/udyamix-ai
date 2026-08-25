@@ -21,6 +21,5 @@ langdetect
 
 pdfminer.six
 python-docx
-pytesseract
 pdf2image
 pillow
